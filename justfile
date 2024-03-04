@@ -13,7 +13,7 @@ test-cover: mocks
 
 # run unit tests and produce coverage report (docker)
 test-cover-ci:
-    docker run --rm -v $(pwd):/work -w /work golang:1.21-alpine sh -c "apk add --no-cache just && just test-cover"
+    docker run --rm -v $(pwd):/work -w /work golang:1.22-alpine sh -c "apk add --no-cache just && just test-cover"
 
 # tidy modules
 tidy:
