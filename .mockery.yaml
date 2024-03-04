@@ -1,0 +1,11 @@
+filename: "mock_{{.InterfaceName}}.go"
+dir: "{{.InterfaceDir}}/mocks"
+mockname: "Mock{{.InterfaceName}}"
+outpkg: "mocks"
+inpackage: false
+with-expecter: true
+packages:
+  github.com/jj-style/gobal-player/pkg/resty:
+    interfaces:
+      Client:
+      HttpClient:
