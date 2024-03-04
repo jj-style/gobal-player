@@ -6,7 +6,7 @@ test:
     go list -f '{{{{.Dir}}' -m | xargs go test -cover
 
 # run unit tests and produce coverage report
-test-cover:
+test-cover: mocks
     go install github.com/axw/gocov/gocov@latest
     go install github.com/AlekSi/gocov-xml@latest
     go list -f '{{{{.Dir}}' -m | xargs gocov test | gocov-xml > coverage.xml
