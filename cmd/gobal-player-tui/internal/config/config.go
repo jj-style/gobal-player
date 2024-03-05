@@ -68,7 +68,5 @@ func ReadInConfig() {
 		if err != nil {
 			log.Fatal(fmt.Errorf("unable to decode into struct, %v", err))
 		}
-		fmt.Printf("%+v\n", C)
-		fmt.Printf("%+v\n", viper.AllSettings())
 	}
 }
