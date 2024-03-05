@@ -34,7 +34,7 @@ func main() {
 	}
 	defer cleanup()
 
-	app := NewApp(gp, player)
+	app := NewApp(gp, player, httpClient)
 	if err := app.Run(); err != nil {
 		log.Fatal(err)
 	}

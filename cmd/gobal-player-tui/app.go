@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -18,6 +19,7 @@ type app struct {
 	tv     *tview.Application
 	player audioplayer.Player
 	gp     globalplayer.GlobalPlayer
+	hc     *http.Client
 
 	stations     []models.StationBrand
 	stationsList *tview.List
@@ -45,13 +47,14 @@ type streamItem struct {
 	Id   string
 }
 
-func NewApp(gp globalplayer.GlobalPlayer, player audioplayer.Player) *app {
+func NewApp(gp globalplayer.GlobalPlayer, player audioplayer.Player, hc *http.Client) *app {
 	tv := tview.NewApplication().EnableMouse(false)
 
 	a := &app{
 		tv:        tv,
 		gp:        gp,
 		player:    player,
+		hc:        hc,
 		streaming: streamingData{},
 	}
 
@@ -168,7 +171,7 @@ func (a *app) initViews() {
 			curr := cuList.GetCurrentItem()
 			cuList.SetItemText(cuList.GetCurrentItem(), mainText+" [blue](downloading...)", "")
 			go func() {
-				if err := resty.DownloadFile(fmt.Sprintf("%s.m4a", mainText), a.catchups[curr].StreamURL); err != nil {
+				if err := resty.DownloadFile(a.hc, fmt.Sprintf("%s.m4a", mainText), a.catchups[curr].StreamURL); err != nil {
 					log.Fatal(err)
 				}
 				a.tv.QueueUpdateDraw(func() {

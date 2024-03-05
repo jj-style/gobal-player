@@ -7,7 +7,7 @@ import (
 )
 
 // Downloads the file at given url to the path specified, or fails if it can't.
-func DownloadFile(filepath string, url string) error {
+func DownloadFile(hc HttpClient, filepath string, url string) error {
 	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
@@ -15,8 +15,13 @@ func DownloadFile(filepath string, url string) error {
 	}
 	defer out.Close()
 
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+
 	// Get the data
-	resp, err := http.Get(url)
+	resp, err := hc.Do(req)
 	if err != nil {
 		return err
 	}
