@@ -2,8 +2,17 @@ module github.com/jj-style/gobal-player/cmd/gobal-player-tui
 
 go 1.22.0
 
+replace github.com/jj-style/gobal-player/pkg/audioplayer => ../../pkg/audioplayer
+
+replace github.com/jj-style/gobal-player/pkg/resty => ../../pkg/resty
+
+replace github.com/jj-style/gobal-player/pkg/globalplayer => ../../pkg/globalplayer
+
 require (
 	github.com/gdamore/tcell/v2 v2.7.4
+	github.com/jj-style/gobal-player/pkg/audioplayer v0.0.0-00010101000000-000000000000
+	github.com/jj-style/gobal-player/pkg/globalplayer v0.0.0-00010101000000-000000000000
+	github.com/jj-style/gobal-player/pkg/resty v0.0.0-00010101000000-000000000000
 	github.com/rivo/tview v0.0.0-20240225120200-5605142ca62e
 	github.com/samber/lo v1.39.0
 	github.com/sirupsen/logrus v1.9.3
@@ -11,6 +20,7 @@ require (
 )
 
 require (
+	github.com/adrg/libvlc-go/v3 v3.1.5 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
