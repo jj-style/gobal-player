@@ -22,3 +22,6 @@
 
 # Generated mocks
 mocks/
+
+# Coverage file
+coverage.xml
