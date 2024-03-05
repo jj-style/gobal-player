@@ -20,8 +20,5 @@
 # Go workspace file
 # go.work
 
-# Generated mocks
-mocks/
-
 # Coverage file
 coverage.xml
