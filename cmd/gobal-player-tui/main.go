@@ -25,7 +25,7 @@ func main() {
 
 	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: config.C.Insecure}}}
 	checkOrRegenConfig(httpClient)
-	fmt.Printf("insecure %+v\n", config.C.Insecure)
+
 	gp := globalplayer.NewClient(httpClient, config.C.BuildId)
 
 	player, cleanup, err := audioplayer.NewPlayer()
