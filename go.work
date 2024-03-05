@@ -1,8 +1,0 @@
-go 1.22.0
-
-use (
-	./cmd/gobal-player-tui
-	./pkg/audioplayer
-	./pkg/globalplayer
-	./pkg/resty
-)

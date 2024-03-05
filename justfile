@@ -3,13 +3,13 @@ _default:
 
 # run unit tests
 test:
-    go list -f '{{{{.Dir}}' -m | xargs go test -cover
+    go test -cover ./...
 
 # run unit tests and produce coverage report
 test-cover: mocks
     go install github.com/axw/gocov/gocov@latest
     go install github.com/AlekSi/gocov-xml@latest
-    go list -f '{{{{.Dir}}' -m | xargs gocov test | gocov-xml > coverage.xml
+    gocov test ./... | gocov-xml > coverage.xml
 
 # run unit tests and produce coverage report (docker)
 test-cover-ci:
@@ -17,11 +17,16 @@ test-cover-ci:
 
 # tidy modules
 tidy:
-    go list -f '{{{{.Dir}}' -m | xargs -L1 go mod tidy -C
+    go mod tidy
 
 # format code
 fmt:
     gofmt -w .
+
+# build executables
+build:
+    @mkdir -p bin/
+    go build -o bin/ ./...
 
 # generate mocks
 mocks:
