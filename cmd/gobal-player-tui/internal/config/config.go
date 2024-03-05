@@ -21,11 +21,12 @@ var (
 )
 
 type Config struct {
-	BuildId string `mapstructure:"buildId"`
+	BuildId  string `mapstructure:"buildId"`
+	Insecure bool   `mapstructure:"insecure"`
 }
 
 func NewConfig() *Config {
-	return &Config{}
+	return &Config{Insecure: false}
 }
 
 // Initailises viper and loads the configuration
@@ -43,7 +44,9 @@ func InitConfig() {
 	viper.AddConfigPath(".")                        // optionally look for config in the working directory
 	viper.AutomaticEnv()                            // automatically merge in environment variables
 	viper.SetEnvPrefix("gp")                        // only consider environment variables starting "GP_"
-	viper.WatchConfig()                             // watch config file for changes
+
+	viper.SetDefault("insecure", "false")
+
 	ReadInConfig()
 }
 
@@ -65,5 +68,7 @@ func ReadInConfig() {
 		if err != nil {
 			log.Fatal(fmt.Errorf("unable to decode into struct, %v", err))
 		}
+		fmt.Printf("%+v\n", C)
+		fmt.Printf("%+v\n", viper.AllSettings())
 	}
 }

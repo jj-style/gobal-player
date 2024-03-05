@@ -1,14 +1,11 @@
 package globalplayer
 
 import (
-	"context"
 	"errors"
-	"log"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"regexp"
-
-	"github.com/chromedp/chromedp"
 )
 
 const (
@@ -21,19 +18,19 @@ var (
 )
 
 // Gets the build id for global player of errors.
-func GetBuildId() (string, error) {
-	ctx, cancel := chromedp.NewContext(context.Background())
-	defer cancel()
+func GetBuildId(client *http.Client) (string, error) {
+	resp, err := client.Get(globalPlayerQueryUrl)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
 
-	var data string
-	if err := chromedp.Run(ctx,
-		chromedp.Navigate(globalPlayerQueryUrl),
-		chromedp.OuterHTML("html", &data, chromedp.ByQuery),
-	); err != nil {
-		log.Fatal(err)
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
 	}
 
-	buildId := buildIdRe.FindStringSubmatch(data)
+	buildId := buildIdRe.FindStringSubmatch(string(b))
 	if len(buildId) != 2 {
 		return "", ErrBuildIdNotFound
 	}
@@ -41,12 +38,12 @@ func GetBuildId() (string, error) {
 }
 
 // Checks if the build id is still valid
-func CheckBuildId(id string) bool {
+func CheckBuildId(client *http.Client, id string) bool {
 	checkUrl, err := url.JoinPath(baseUrl, id, "index.json")
 	if err != nil {
 		return false
 	}
-	resp, err := http.Get(checkUrl)
+	resp, err := client.Get(checkUrl)
 	if err != nil {
 		return false
 	}

@@ -2,6 +2,7 @@ package globalplayer
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
@@ -25,10 +26,11 @@ type gpClient struct {
 	rc resty.Client
 }
 
-func NewClient(apiKey string) GlobalPlayer {
+func NewClient(hc *http.Client, apiKey string) GlobalPlayer {
 	baseUrlWithApiKey, _ := url.JoinPath(baseUrl, apiKey)
 	restClient := resty.NewClient(
 		resty.WithBaseUrl(baseUrlWithApiKey),
+		resty.WithHttpClient(hc),
 	)
 	c := &gpClient{rc: restClient}
 	return c
