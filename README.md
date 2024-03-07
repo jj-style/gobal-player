@@ -11,3 +11,5 @@ TUI application for streaming live radio, and streaming or downloading catchup e
 go install https://github.com/jj-style/gobal-player/cmd/gobal-player-tui
 gobal-player-tui
 ```
+
+![tui-demo](.github/assets/tui.gif)
