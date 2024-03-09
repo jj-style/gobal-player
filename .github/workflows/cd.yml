@@ -15,7 +15,7 @@ jobs:
         run: |
           curl -sSfL https://github.com/convco/convco/releases/latest/download/convco-ubuntu.zip | zcat > convco
           chmod +x convco
-          convco changelog > ${{ github.workspace }}-CHANGELOG.txt
+          ./convco changelog > ${{ github.workspace }}-CHANGELOG.txt
           rm convco
       - name: Release
         uses: softprops/action-gh-release@v2
