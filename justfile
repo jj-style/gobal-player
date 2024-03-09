@@ -32,3 +32,11 @@ build:
 mocks:
     @go install github.com/vektra/mockery/v2@v2.42.0
     mockery
+
+# bump
+tag-bump semver='bump':
+    git tag v$(convco version --{{semver}})
+
+# changelog
+changelog:
+    convco changelog
