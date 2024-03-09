@@ -35,7 +35,7 @@ mocks:
 
 # bump
 tag-bump semver='bump':
-    git tag v$(convco version --{{semver}})
+    git tag -a v$(convco version --{{semver}})
 
 # changelog
 changelog:
