@@ -13,3 +13,4 @@ gobal-player-tui
 ```
 
 ![tui-demo](.github/assets/tui.gif)
+
