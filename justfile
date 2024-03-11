@@ -3,13 +3,13 @@ _default:
 
 # run unit tests
 test:
-    go test -cover ./...
+    go test -cover `go list ./... | grep -v mocks`
 
 # run unit tests and produce coverage report
 test-cover: mocks
     go install github.com/axw/gocov/gocov@latest
     go install github.com/AlekSi/gocov-xml@latest
-    gocov test ./... | gocov-xml > coverage.xml
+    gocov test `go list ./... | grep -v mocks` | gocov-xml > coverage.xml
 
 # run unit tests and produce coverage report (docker)
 test-cover-ci:
