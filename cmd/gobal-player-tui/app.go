@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/jj-style/gobal-player/cmd/gobal-player-tui/internal/utils/text"
 	"github.com/jj-style/gobal-player/pkg/audioplayer"
 	"github.com/jj-style/gobal-player/pkg/globalplayer"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
@@ -33,6 +34,10 @@ type app struct {
 	stationSlug string
 	showId      string
 
+	// panel -> {"key": "description"}
+	kbdShortcuts map[int]map[string]string
+	helpText     *tview.TextView
+
 	streaming streamingData
 }
 
@@ -51,11 +56,13 @@ func NewApp(gp globalplayer.GlobalPlayer, player audioplayer.Player, hc *http.Cl
 	tv := tview.NewApplication().EnableMouse(false)
 
 	a := &app{
-		tv:        tv,
-		gp:        gp,
-		player:    player,
-		hc:        hc,
-		streaming: streamingData{},
+		tv:           tv,
+		gp:           gp,
+		player:       player,
+		hc:           hc,
+		streaming:    streamingData{},
+		kbdShortcuts: make(map[int]map[string]string),
+		helpText:     tview.NewTextView(),
 	}
 
 	// ensure log.Fatal stops tui so doesn't mess up terminal
@@ -114,19 +121,16 @@ func (a *app) initViews() {
 			}()
 		})
 	stList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		switch event.Rune() {
-		case 'j':
+		r := event.Rune()
+		k := event.Key()
+		switch {
+		case r == 'j', k == tcell.KeyDown:
 			stList.SetCurrentItem((stList.GetCurrentItem() + 1) % stList.GetItemCount())
-			return nil
-		case 'k':
+		case r == 'k', k == tcell.KeyUp:
 			stList.SetCurrentItem((stList.GetCurrentItem() - 1) % stList.GetItemCount())
-			return nil
-		}
-		switch event.Key() {
-		case tcell.KeyEnter:
+		case k == tcell.KeyEnter:
 			station := a.stations[stList.GetCurrentItem()]
 			a.stream(a.stationsList, lo.Map(a.stations, func(item models.StationBrand, _ int) streamItem { return streamItem{Name: item.Name, Id: item.ID} }), station.NationalStation.StreamURL)
-			return nil
 		}
 		return nil
 	})
@@ -142,13 +146,13 @@ func (a *app) initViews() {
 			}()
 		})
 	showList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		switch event.Rune() {
-		case 'j':
+		r := event.Rune()
+		k := event.Key()
+		switch {
+		case r == 'j', k == tcell.KeyDown:
 			showList.SetCurrentItem((showList.GetCurrentItem() + 1) % showList.GetItemCount())
-			return nil
-		case 'k':
+		case r == 'k', k == tcell.KeyUp:
 			showList.SetCurrentItem((showList.GetCurrentItem() - 1) % showList.GetItemCount())
-			return nil
 		}
 		return nil
 	})
@@ -159,14 +163,15 @@ func (a *app) initViews() {
 		if cuList.GetItemCount() == 0 {
 			return nil
 		}
-		switch event.Rune() {
-		case 'j':
+
+		r := event.Rune()
+		k := event.Key()
+		switch {
+		case r == 'j', k == tcell.KeyDown:
 			cuList.SetCurrentItem((cuList.GetCurrentItem() + 1) % cuList.GetItemCount())
-			return nil
-		case 'k':
+		case r == 'k', k == tcell.KeyUp:
 			cuList.SetCurrentItem((cuList.GetCurrentItem() - 1) % cuList.GetItemCount())
-			return nil
-		case 'd':
+		case r == 'd':
 			mainText, _ := cuList.GetItemText(cuList.GetCurrentItem())
 			curr := cuList.GetCurrentItem()
 			cuList.SetItemText(cuList.GetCurrentItem(), mainText+" [blue](downloading...)", "")
@@ -178,20 +183,22 @@ func (a *app) initViews() {
 					cuList.SetItemText(curr, mainText, "")
 				})
 			}()
-			return nil
-		}
-		switch event.Key() {
-		case tcell.KeyEnter:
+		case k == tcell.KeyEnter:
 			ep := a.catchups[cuList.GetCurrentItem()]
 			a.stream(a.catchupList, lo.Map(a.catchups, func(item models.Episode, _ int) streamItem {
 				mainText := fmt.Sprintf("%s - %s - %s", item.Title, item.StartDate.Format("Mon 2006-01-02"), item.Availability)
 				return streamItem{Name: mainText, Id: item.ID}
 			}), ep.StreamURL)
-			return nil
 		}
 		return nil
 	})
 	a.catchupList = cuList
+
+	// create keyboard shortcut help
+	a.kbdShortcuts[1] = map[string]string{"\u21B5": "play/pause"}
+	a.kbdShortcuts[2] = map[string]string{}
+	a.kbdShortcuts[3] = map[string]string{"\u21B5": "play/pause", "d": "download"}
+	a.helpText.SetText(text.FormatHelp(a.kbdShortcuts[1]))
 }
 
 // initialise the TUI app
@@ -211,12 +218,15 @@ func (a *app) initTui() {
 		switch event.Rune() {
 		case 49: // 1
 			a.tv.SetFocus(a.stationsList)
+			a.helpText.SetText(text.FormatHelp(a.kbdShortcuts[1]))
 			return nil
 		case 50: // 2
 			a.tv.SetFocus(a.showsList)
+			a.helpText.SetText(text.FormatHelp(a.kbdShortcuts[2]))
 			return nil
 		case 51: // 2
 			a.tv.SetFocus(a.catchupList)
+			a.helpText.SetText(text.FormatHelp(a.kbdShortcuts[3]))
 			return nil
 		}
 		return event
@@ -238,12 +248,16 @@ func (a *app) render() {
 	epsFlex.Box.SetBorder(true).SetTitle("[3] Episodes")
 	epsFlex.AddItem(a.catchupList, 0, 1, true)
 
-	root := tview.NewFlex().
+	panels := tview.NewFlex().
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 			AddItem(stationsFlex, 0, 1, false).
 			AddItem(showsFlex, 0, 1, false),
 			0, 1, false).
 		AddItem(epsFlex, 0, 1, false)
+
+	root := tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(panels, 0, 9, true).
+		AddItem(a.helpText, 0, 1, false)
 
 	a.tv.SetRoot(root, true)
 	a.tv.SetFocus(a.stationsList)
