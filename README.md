@@ -1,5 +1,7 @@
 # gobal-player
 
+[![CI](https://github.com/jj-style/gobal-player/actions/workflows/ci.yml/badge.svg)](https://github.com/jj-style/gobal-player/actions/workflows/ci.yml)
+
 Unofficial collection of apps, packages and APIs for global player radio.
 
 ## gobal-player-tui
