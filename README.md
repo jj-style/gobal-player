@@ -10,7 +10,7 @@ TUI application for streaming live radio, and streaming or downloading catchup e
 ### Install
 #### From source
 ```
-go install https://github.com/jj-style/gobal-player/cmd/gobal-player-tui@v0.1.6
+go install github.com/jj-style/gobal-player/cmd/gobal-player-tui@v0.1.6
 gobal-player-tui
 ```
 
