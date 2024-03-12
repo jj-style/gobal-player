@@ -256,7 +256,7 @@ func (a *app) render() {
 		AddItem(epsFlex, 0, 1, false)
 
 	root := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(panels, 0, 9, true).
+		AddItem(panels, 0, 99, true).
 		AddItem(a.helpText, 0, 1, false)
 
 	a.tv.SetRoot(root, true)
