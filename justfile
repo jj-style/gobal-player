@@ -33,9 +33,22 @@ mocks:
     @go install github.com/vektra/mockery/v2@v2.42.0
     mockery
 
-# bump
-tag-bump semver='bump':
-    git tag v$(convco version --{{semver}}) -m "v$(convco version --{{semver}})"
+# release
+release semver='bump':
+    #!/bin/bash
+    currentVersion=$(convco version)
+    nextVersion=$(convco version --{{semver}})
+
+    convco changelog -u $nextVersion > CHANGELOG.md
+    sed -i "s/@v$currentVersion/@v$nextVersion/g" README.md
+
+    git add README.md CHANGELOG.md
+    convco commit --chore --message "release $currentVersion -> $nextVersion"
+
+    git tag v$nextVersion -m "v$nextVersion"
+
+    git push --follow-tags
+
 
 # changelog
 changelog:
