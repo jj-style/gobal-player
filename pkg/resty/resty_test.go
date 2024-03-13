@@ -185,3 +185,38 @@ func Test_client_Get(t *testing.T) {
 		})
 	}
 }
+
+func TestClientCacheSetCalledOnCacheMiss(t *testing.T) {
+	hc := mocks.NewMockHttpClient(t)
+	cache := mocks.NewMockCache[[]byte](t)
+	var resp = &http.Response{
+		StatusCode: 200,
+		Body:       io.NopCloser(bytes.NewBufferString("hello")),
+	}
+
+	// cache miss
+	cache.EXPECT().Get(mock.Anything, mock.AnythingOfType("string")).Return(nil, nil)
+	// mock request/response
+	hc.EXPECT().Do(mock.Anything).Return(resp, nil)
+	// cache stored
+	cache.EXPECT().Set(mock.Anything, mock.AnythingOfType("string"), []byte("hello")).Return(nil)
+
+	c := resty.NewClient(resty.WithHttpClient(hc), resty.WithCache(cache))
+
+	c.Get("http://example.com")
+}
+
+func TestClientCacheGetHit(t *testing.T) {
+	hc := mocks.NewMockHttpClient(t)
+	cache := mocks.NewMockCache[[]byte](t)
+
+	// cache hit
+	cache.EXPECT().Get(mock.Anything, mock.AnythingOfType("string")).Return([]byte("hello"), nil)
+
+	c := resty.NewClient(resty.WithHttpClient(hc), resty.WithCache(cache))
+
+	resp, err := c.Get("http://example.com")
+
+	assert.NoError(t, err)
+	assert.Equal(t, []byte("hello"), resp)
+}

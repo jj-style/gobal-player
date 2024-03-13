@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
 	"github.com/jj-style/gobal-player/pkg/resty"
@@ -31,6 +32,7 @@ func NewClient(hc *http.Client, apiKey string) GlobalPlayer {
 	restClient := resty.NewClient(
 		resty.WithBaseUrl(baseUrlWithApiKey),
 		resty.WithHttpClient(hc),
+		resty.WithCache(resty.NewCache[[]byte](time.Hour)),
 	)
 	c := &gpClient{rc: restClient}
 	return c
