@@ -2,7 +2,9 @@ package resty
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -24,6 +26,7 @@ type Client interface {
 type client struct {
 	http    HttpClient
 	baseUrl *url.URL
+	cache   Cache[[]byte]
 }
 
 type ClientOption func(*client)
@@ -38,6 +41,12 @@ func WithBaseUrl(baseUrl string) ClientOption {
 	}
 }
 
+func WithCache(ca Cache[[]byte]) ClientOption {
+	return func(c *client) {
+		c.cache = ca
+	}
+}
+
 func WithHttpClient(hc HttpClient) ClientOption {
 	return func(c *client) {
 		c.http = hc
@@ -46,7 +55,8 @@ func WithHttpClient(hc HttpClient) ClientOption {
 
 func NewClient(opts ...ClientOption) Client {
 	c := &client{
-		http: &http.Client{},
+		http:  &http.Client{},
+		cache: &nilCache[[]byte]{},
 	}
 	for _, o := range opts {
 		o(c)
@@ -64,6 +74,11 @@ func (c *client) doRestRequest(req *http.Request) (*http.Response, error) {
 }
 
 func (c *client) do(req *http.Request) ([]byte, error) {
+	key := cacheKey(req)
+	if hit, _ := c.cache.Get(context.TODO(), key); hit != nil {
+		return hit, nil
+	}
+
 	resp, err := c.doRestRequest(req)
 	if err != nil {
 		return nil, err
@@ -73,6 +88,9 @@ func (c *client) do(req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	_ = c.cache.Set(context.TODO(), key, out)
+
 	if resp.StatusCode > 300 {
 		log.WithFields(log.Fields{"code": resp.StatusCode, "content": string(out)}).Error("bad status code")
 	}
@@ -122,4 +140,8 @@ func (c *client) Get(uri string) ([]byte, error) {
 		return nil, err
 	}
 	return c.do(req)
+}
+
+func cacheKey(req *http.Request) string {
+	return fmt.Sprintf("%s %s", req.Method, req.URL)
 }

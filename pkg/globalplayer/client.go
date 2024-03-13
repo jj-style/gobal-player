@@ -26,11 +26,12 @@ type gpClient struct {
 	rc resty.Client
 }
 
-func NewClient(hc *http.Client, apiKey string) GlobalPlayer {
+func NewClient(hc *http.Client, apiKey string, cache resty.Cache[[]byte]) GlobalPlayer {
 	baseUrlWithApiKey, _ := url.JoinPath(baseUrl, apiKey)
 	restClient := resty.NewClient(
 		resty.WithBaseUrl(baseUrlWithApiKey),
 		resty.WithHttpClient(hc),
+		resty.WithCache(cache),
 	)
 	c := &gpClient{rc: restClient}
 	return c

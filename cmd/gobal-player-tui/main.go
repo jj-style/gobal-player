@@ -13,6 +13,7 @@ import (
 	"github.com/jj-style/gobal-player/cmd/gobal-player-tui/internal/config"
 	"github.com/jj-style/gobal-player/pkg/audioplayer"
 	"github.com/jj-style/gobal-player/pkg/globalplayer"
+	"github.com/jj-style/gobal-player/pkg/resty"
 )
 
 func init() {
@@ -26,7 +27,10 @@ func main() {
 	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: config.C.Insecure}}}
 	checkOrRegenConfig(httpClient)
 
-	gp := globalplayer.NewClient(httpClient, config.C.BuildId)
+	// don't expire cache in the TUI
+	cache := resty.NewCache[[]byte](0)
+
+	gp := globalplayer.NewClient(httpClient, config.C.BuildId, cache)
 
 	player, cleanup, err := audioplayer.NewPlayer()
 	if err != nil {

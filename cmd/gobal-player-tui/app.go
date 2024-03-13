@@ -71,6 +71,8 @@ func NewApp(gp globalplayer.GlobalPlayer, player audioplayer.Player, hc *http.Cl
 		os.Exit(code)
 	}
 
+	go a.prefetch()
+
 	a.initTui()
 	return a
 }
@@ -313,6 +315,28 @@ func (a *app) getCatchupList(slug, id string) {
 			a.catchups = append(a.catchups, show)
 			text := fmt.Sprintf("%s - %s - %s", show.Title, show.StartDate.Format("Mon 2006-01-02"), show.Availability)
 			a.catchupList.AddItem(text, "", 0, nil)
+		}
+	}
+}
+
+// pre-fetch all data so it's in the cache
+func (a *app) prefetch() {
+	stations, err := a.gp.GetStations()
+	if err != nil {
+		return
+	}
+	brands := stations.PageProps.Feature.Blocks[0].Brands
+	if len(brands) == 0 {
+		return
+	}
+	for _, st := range brands {
+		cu, _ := a.gp.GetCatchup(st.Slug)
+		if len(cu.PageProps.CatchupInfo) > 0 {
+			for _, cu := range cu.PageProps.CatchupInfo {
+				go func() {
+					_, _ = a.gp.GetCatchupShows(st.Slug, cu.ID)
+				}()
+			}
 		}
 	}
 }
