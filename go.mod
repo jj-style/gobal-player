@@ -7,6 +7,7 @@ require (
 	github.com/eko/gocache/lib/v4 v4.1.5
 	github.com/eko/gocache/store/go_cache/v4 v4.2.1
 	github.com/gdamore/tcell/v2 v2.7.4
+	github.com/golang/mock v1.6.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rivo/tview v0.0.0-20240225120200-5605142ca62e
 	github.com/samber/lo v1.39.0
@@ -21,7 +22,6 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
-	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
