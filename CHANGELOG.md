@@ -1,14 +1,16 @@
 # Changelog
 
-## [v0.1.6](https://github.com/jj-style/gobal-player/compare/v0.1.5...HEAD) (2024-03-11)
+## [v0.1.7](https://github.com/jj-style/gobal-player/compare/v0.1.6...HEAD) (2024-03-13)
 
-### Features
+### [v0.1.6](https://github.com/jj-style/gobal-player/compare/v0.1.5...v0.1.6) (2024-03-12)
+
+#### Features
 
 * **tui:** Add keyboard shortcut help text panel
 ([021f8c8](https://github.com/jj-style/gobal-player/commit/021f8c8bc193c7f98f323faf197737ca02cb69c7)),
 closes [#3](https://github.com/jj-style/gobal-player/issues/3)
 
-### Fixes
+#### Fixes
 
 * **tests:** fix go list running in docker
 ([321ef11](https://github.com/jj-style/gobal-player/commit/321ef1122c1ed71f2c99987eedd5573beb370a7c))
