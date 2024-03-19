@@ -27,6 +27,8 @@ func main() {
 	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: config.C.Insecure}}}
 	checkOrRegenConfig(httpClient)
 
+	defer viper.WriteConfig()
+
 	// don't expire cache in the TUI
 	cache := resty.NewCache[[]byte](0)
 

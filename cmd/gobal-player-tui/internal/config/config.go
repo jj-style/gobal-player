@@ -3,10 +3,12 @@ package config
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path"
 
+	log "github.com/sirupsen/logrus"
+
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
@@ -21,8 +23,13 @@ var (
 )
 
 type Config struct {
-	BuildId  string `mapstructure:"buildId"`
-	Insecure bool   `mapstructure:"insecure"`
+	BuildId   string `mapstructure:"buildId"`
+	Insecure  bool   `mapstructure:"insecure"`
+	Favourite string `mapstructure:"favourite"`
+}
+
+func (c *Config) SetFavourite(f string) {
+	viper.Set("favourite", f)
 }
 
 func NewConfig() *Config {
@@ -44,7 +51,11 @@ func InitConfig() {
 	viper.AddConfigPath(".")                        // optionally look for config in the working directory
 	viper.AutomaticEnv()                            // automatically merge in environment variables
 	viper.SetEnvPrefix("gp")                        // only consider environment variables starting "GP_"
-
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		log.Debugf("Config file changed: %s", e.Name)
+		ReadInConfig()
+	})
+	viper.WatchConfig()
 	viper.SetDefault("insecure", "false")
 
 	ReadInConfig()

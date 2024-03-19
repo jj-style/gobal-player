@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/jj-style/gobal-player/cmd/gobal-player-tui/internal/config"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-tui/internal/utils/text"
 	"github.com/jj-style/gobal-player/pkg/audioplayer"
 	"github.com/jj-style/gobal-player/pkg/globalplayer"
@@ -130,6 +131,8 @@ func (a *app) initViews() {
 			stList.SetCurrentItem((stList.GetCurrentItem() + 1) % stList.GetItemCount())
 		case r == 'k', k == tcell.KeyUp:
 			stList.SetCurrentItem((stList.GetCurrentItem() - 1) % stList.GetItemCount())
+		case r == 'f':
+			config.C.SetFavourite(a.stations[stList.GetCurrentItem()].Slug)
 		case k == tcell.KeyEnter:
 			station := a.stations[stList.GetCurrentItem()]
 			a.stream(a.stationsList, lo.Map(a.stations, func(item models.StationBrand, _ int) streamItem { return streamItem{Name: item.Name, Id: item.ID} }), station.NationalStation.StreamURL)
@@ -197,7 +200,7 @@ func (a *app) initViews() {
 	a.catchupList = cuList
 
 	// create keyboard shortcut help
-	a.kbdShortcuts[1] = map[string]string{"\u21B5": "play/pause"}
+	a.kbdShortcuts[1] = map[string]string{"\u21B5": "play/pause", "f": "favourite"}
 	a.kbdShortcuts[2] = map[string]string{}
 	a.kbdShortcuts[3] = map[string]string{"\u21B5": "play/pause", "d": "download"}
 	a.helpText.SetText(text.FormatHelp(a.kbdShortcuts[1]))
@@ -275,10 +278,18 @@ func (a *app) getStationList() {
 		log.Fatal(err)
 	}
 
-	for _, station := range stations.PageProps.Feature.Blocks[0].Brands {
+	for idx, station := range stations.PageProps.Feature.Blocks[0].Brands {
 		a.stations = append(a.stations, station)
 		text := station.Name
 		a.stationsList.AddItem(text, "", 0, nil)
+
+		if station.Slug == config.C.Favourite {
+			go func() {
+				a.tv.QueueUpdateDraw(func() {
+					a.stationsList.SetCurrentItem(idx)
+				})
+			}()
+		}
 	}
 }
 
