@@ -1,6 +1,14 @@
 # Changelog
 
-## [v0.1.7](https://github.com/jj-style/gobal-player/compare/v0.1.6...HEAD) (2024-03-13)
+## [v0.1.8](https://github.com/jj-style/gobal-player/compare/v0.1.7...HEAD) (2024-03-20)
+
+### Features
+
+* **tui:** set preferred station in config
+([de5040e](https://github.com/jj-style/gobal-player/commit/de5040eb7799b98f85b0a6f8107b22dcf7511a85)),
+closes [#13](https://github.com/jj-style/gobal-player/issues/13)
+
+### [v0.1.7](https://github.com/jj-style/gobal-player/compare/v0.1.6...v0.1.7) (2024-03-13)
 
 ### [v0.1.6](https://github.com/jj-style/gobal-player/compare/v0.1.5...v0.1.6) (2024-03-12)
 

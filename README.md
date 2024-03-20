@@ -17,7 +17,7 @@ Published in the [AUR: gobal-player-tui](https://aur.archlinux.org/packages/goba
 
 #### From source
 ```bash
-go install github.com/jj-style/gobal-player/cmd/gobal-player-tui@v0.1.7
+go install github.com/jj-style/gobal-player/cmd/gobal-player-tui@v0.1.8
 gobal-player-tui
 ```
 
