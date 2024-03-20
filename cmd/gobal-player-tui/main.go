@@ -24,15 +24,17 @@ func main() {
 	cleanup1 := initLogger()
 	defer cleanup1()
 
-	httpClient := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: config.C.Insecure}}}
-	checkOrRegenConfig(httpClient)
+	httpClient, err := newHttpClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	defer viper.WriteConfig()
 
 	// don't expire cache in the TUI
 	cache := resty.NewCache[[]byte](0)
 
-	gp := globalplayer.NewClient(httpClient, config.C.BuildId, cache)
+	gp := globalplayer.NewClient(httpClient, viper.GetString("buildId"), cache)
 
 	player, cleanup, err := audioplayer.NewPlayer()
 	if err != nil {
@@ -60,18 +62,16 @@ func initLogger() func() {
 	}
 }
 
-// checks the state of the config
-// and regenerates a new buildId if it is invalid
-func checkOrRegenConfig(hc *http.Client) {
-	if ok := globalplayer.CheckBuildId(hc, config.C.BuildId); !ok {
-		newBuildId, err := globalplayer.GetBuildId(hc)
+// creates a new *http.Client based on the config.
+// Checks whether it has a valid token or generates a new one if not.
+func newHttpClient() (*http.Client, error) {
+	client := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: viper.GetBool("insecure")}}}
+	if ok := globalplayer.CheckBuildId(client, viper.GetString("buildId")); !ok {
+		newBuildId, err := globalplayer.GetBuildId(client)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		viper.Set("buildId", newBuildId)
-		if err := viper.WriteConfigAs(path.Join(config.UserAppDir, "config.yaml")); err != nil {
-			log.Fatal(err)
-		}
-		config.ReadInConfig()
 	}
+	return client, nil
 }

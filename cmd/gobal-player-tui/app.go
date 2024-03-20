@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/jj-style/gobal-player/cmd/gobal-player-tui/internal/config"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-tui/internal/utils/text"
 	"github.com/jj-style/gobal-player/pkg/audioplayer"
 	"github.com/jj-style/gobal-player/pkg/globalplayer"
@@ -15,6 +14,7 @@ import (
 	"github.com/rivo/tview"
 	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 type app struct {
@@ -132,7 +132,7 @@ func (a *app) initViews() {
 		case r == 'k', k == tcell.KeyUp:
 			stList.SetCurrentItem((stList.GetCurrentItem() - 1) % stList.GetItemCount())
 		case r == 'f':
-			config.C.SetFavourite(a.stations[stList.GetCurrentItem()].Slug)
+			viper.Set("favourite", (a.stations[stList.GetCurrentItem()].Slug))
 		case k == tcell.KeyEnter:
 			station := a.stations[stList.GetCurrentItem()]
 			a.stream(a.stationsList, lo.Map(a.stations, func(item models.StationBrand, _ int) streamItem { return streamItem{Name: item.Name, Id: item.ID} }), station.NationalStation.StreamURL)
@@ -283,7 +283,7 @@ func (a *app) getStationList() {
 		text := station.Name
 		a.stationsList.AddItem(text, "", 0, nil)
 
-		if station.Slug == config.C.Favourite {
+		if station.Slug == viper.GetString("favourite") {
 			go func() {
 				a.tv.QueueUpdateDraw(func() {
 					a.stationsList.SetCurrentItem(idx)
