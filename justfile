@@ -23,6 +23,11 @@ tidy:
 fmt:
     gofmt -w .
 
+# generate compile time code
+generate:
+    go install github.com/google/wire/cmd/wire@latest
+    go generate ./...
+
 # build executables
 build:
     @mkdir -p bin/
