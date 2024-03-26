@@ -223,8 +223,7 @@ func (a *app) initTui() {
 
 	// base input handlers
 	a.tv.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		switch event.Key() {
-		case tcell.KeyEsc:
+		if event.Key() == tcell.KeyEsc {
 			// Exit the application
 			a.tv.Stop()
 			return nil

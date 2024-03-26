@@ -54,3 +54,8 @@ release semver='bump':
 changelog:
     convco changelog
 
+# initialize git hooks
+hooks:
+    go install -v github.com/go-critic/go-critic/cmd/gocritic@latest
+    command -v pre-commit
+    pre-commit install

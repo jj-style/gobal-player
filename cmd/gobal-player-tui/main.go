@@ -26,7 +26,8 @@ func main() {
 
 	httpClient, err := newHttpClient()
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return
 	}
 
 	defer viper.WriteConfig()
@@ -38,13 +39,15 @@ func main() {
 
 	player, cleanup, err := audioplayer.NewPlayer()
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return
 	}
 	defer cleanup()
 
 	app := NewApp(gp, player, httpClient, cache)
 	if err := app.Run(); err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return
 	}
 }
 

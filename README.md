@@ -12,7 +12,7 @@ TUI application for streaming live radio, and streaming or downloading catchup e
 ### Install
 
 #### Arch Linux
-Published in the [AUR: gobal-player-tui](https://aur.archlinux.org/packages/gobal-player-tui).   
+Published in the [AUR: gobal-player-tui](https://aur.archlinux.org/packages/gobal-player-tui).
 `yay -S gobal-player-tui`
 
 #### From source
@@ -23,3 +23,6 @@ gobal-player-tui
 
 ![tui-demo](.github/assets/tui.gif)
 
+### Developing
+
+Please install [pre-commit](https://pre-commit.com/#install), and [just](https://github.com/casey/just?tab=readme-ov-file#installation) and run `just hooks` to initialize your git pre-commit hooks.
