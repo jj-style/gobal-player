@@ -15,6 +15,8 @@ type Cache[T any] interface {
 	Get(context.Context, string) (T, error)
 	// Set the value against the given key
 	Set(context.Context, string, T) error
+	// Expire all items from the cache
+	Clear(context.Context) error
 }
 
 // generic wrapper around cache.Cache
@@ -37,6 +39,10 @@ func (c *cacheImpl[T]) Set(ctx context.Context, key string, value T) error {
 	return c.cache.Set(ctx, key, value)
 }
 
+func (c *cacheImpl[T]) Clear(ctx context.Context) error {
+	return c.cache.Clear(ctx)
+}
+
 // nilCache is a Cache which does nothing
 type nilCache[T any] struct{}
 
@@ -45,5 +51,9 @@ func (n *nilCache[T]) Get(context.Context, string) (T, error) {
 }
 
 func (n *nilCache[T]) Set(context.Context, string, T) error {
+	return nil
+}
+
+func (n *nilCache[T]) Clear(context.Context) error {
 	return nil
 }

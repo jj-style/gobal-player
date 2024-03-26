@@ -21,6 +21,52 @@ func (_m *MockCache[T]) EXPECT() *MockCache_Expecter[T] {
 	return &MockCache_Expecter[T]{mock: &_m.Mock}
 }
 
+// Clear provides a mock function with given fields: _a0
+func (_m *MockCache[T]) Clear(_a0 context.Context) error {
+	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Clear")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context) error); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockCache_Clear_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Clear'
+type MockCache_Clear_Call[T interface{}] struct {
+	*mock.Call
+}
+
+// Clear is a helper method to define mock.On call
+//   - _a0 context.Context
+func (_e *MockCache_Expecter[T]) Clear(_a0 interface{}) *MockCache_Clear_Call[T] {
+	return &MockCache_Clear_Call[T]{Call: _e.mock.On("Clear", _a0)}
+}
+
+func (_c *MockCache_Clear_Call[T]) Run(run func(_a0 context.Context)) *MockCache_Clear_Call[T] {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *MockCache_Clear_Call[T]) Return(_a0 error) *MockCache_Clear_Call[T] {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockCache_Clear_Call[T]) RunAndReturn(run func(context.Context) error) *MockCache_Clear_Call[T] {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Get provides a mock function with given fields: _a0, _a1
 func (_m *MockCache[T]) Get(_a0 context.Context, _a1 string) (T, error) {
 	ret := _m.Called(_a0, _a1)

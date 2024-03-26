@@ -32,6 +32,10 @@ func TestNilCache(t *testing.T) {
 	got, err = nc.Get(ctx, "a")
 	assert.NoError(err)
 	assert.Equal(0, got)
+
+	// clear cache
+	err = nc.Clear(ctx)
+	assert.NoError(err)
 }
 
 func TestCache_Get(t *testing.T) {
@@ -127,6 +131,47 @@ func TestCache_Set(t *testing.T) {
 			c := &cacheImpl[int]{cache: cache.New[int](mstore)}
 
 			err := c.Set(ctx, tt.key, tt.value)
+			tt.assertErr(t, err)
+		})
+	}
+}
+
+func TestCache_Clear(t *testing.T) {
+	tests := []struct {
+		name      string
+		setup     func(s *store.MockStoreInterface)
+		assertErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "happy",
+			setup: func(s *store.MockStoreInterface) {
+				s.EXPECT().Clear(gomock.Any()).Return(nil)
+			},
+			assertErr: assert.NoError,
+		},
+		{
+			name: "unhappy",
+			setup: func(s *store.MockStoreInterface) {
+				s.EXPECT().Clear(gomock.Any()).Return(errors.New("boom"))
+			},
+			assertErr: assert.Error,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+
+			gomockController := gomock.NewController(t)
+			mstore := store.NewMockStoreInterface(gomockController)
+
+			if tt.setup != nil {
+				tt.setup(mstore)
+			}
+
+			c := &cacheImpl[int]{cache: cache.New[int](mstore)}
+
+			err := c.Clear(ctx)
 			tt.assertErr(t, err)
 		})
 	}

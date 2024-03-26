@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"maps"
 	"net/http"
 	"os"
 
+	"dario.cat/mergo"
 	"github.com/gdamore/tcell/v2"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-tui/internal/utils/text"
 	"github.com/jj-style/gobal-player/pkg/audioplayer"
@@ -15,6 +18,7 @@ import (
 	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"golang.org/x/sync/errgroup"
 )
 
 type app struct {
@@ -22,6 +26,7 @@ type app struct {
 	player audioplayer.Player
 	gp     globalplayer.GlobalPlayer
 	hc     *http.Client
+	cache  resty.Cache[[]byte]
 
 	stations     []models.StationBrand
 	stationsList *tview.List
@@ -35,9 +40,10 @@ type app struct {
 	stationSlug string
 	showId      string
 
-	// panel -> {"key": "description"}
-	kbdShortcuts map[int]map[string]string
-	helpText     *tview.TextView
+	globalKbdShortcuts map[string]string
+	kbdShortcuts       map[int]map[string]string
+	currentPane        int
+	helpText           *tview.TextView
 
 	streaming streamingData
 }
@@ -53,17 +59,19 @@ type streamItem struct {
 	Id   string
 }
 
-func NewApp(gp globalplayer.GlobalPlayer, player audioplayer.Player, hc *http.Client) *app {
+func NewApp(gp globalplayer.GlobalPlayer, player audioplayer.Player, hc *http.Client, cache resty.Cache[[]byte]) *app {
 	tv := tview.NewApplication().EnableMouse(false)
 
 	a := &app{
-		tv:           tv,
-		gp:           gp,
-		player:       player,
-		hc:           hc,
-		streaming:    streamingData{},
-		kbdShortcuts: make(map[int]map[string]string),
-		helpText:     tview.NewTextView(),
+		tv:                 tv,
+		gp:                 gp,
+		player:             player,
+		hc:                 hc,
+		cache:              cache,
+		streaming:          streamingData{},
+		kbdShortcuts:       make(map[int]map[string]string),
+		globalKbdShortcuts: map[string]string{"r": "refresh"},
+		currentPane:        1,
 	}
 
 	// ensure log.Fatal stops tui so doesn't mess up terminal
@@ -71,8 +79,6 @@ func NewApp(gp globalplayer.GlobalPlayer, player audioplayer.Player, hc *http.Cl
 		a.tv.Stop()
 		os.Exit(code)
 	}
-
-	go a.prefetch()
 
 	a.initTui()
 	return a
@@ -203,12 +209,15 @@ func (a *app) initViews() {
 	a.kbdShortcuts[1] = map[string]string{"\u21B5": "play/pause", "f": "favourite"}
 	a.kbdShortcuts[2] = map[string]string{}
 	a.kbdShortcuts[3] = map[string]string{"\u21B5": "play/pause", "d": "download"}
-	a.helpText.SetText(text.FormatHelp(a.kbdShortcuts[1]))
+
+	a.helpText = tview.NewTextView()
 }
 
 // initialise the TUI app
 func (a *app) initTui() {
 	a.initViews()
+
+	a.prefetch()
 
 	a.render()
 
@@ -220,18 +229,25 @@ func (a *app) initTui() {
 			a.tv.Stop()
 			return nil
 		}
+
 		switch event.Rune() {
 		case 49: // 1
 			a.tv.SetFocus(a.stationsList)
-			a.helpText.SetText(text.FormatHelp(a.kbdShortcuts[1]))
+			a.currentPane = 1
+			a.updateHelpText()
 			return nil
 		case 50: // 2
 			a.tv.SetFocus(a.showsList)
-			a.helpText.SetText(text.FormatHelp(a.kbdShortcuts[2]))
+			a.currentPane = 2
+			a.updateHelpText()
 			return nil
 		case 51: // 2
 			a.tv.SetFocus(a.catchupList)
-			a.helpText.SetText(text.FormatHelp(a.kbdShortcuts[3]))
+			a.currentPane = 3
+			a.updateHelpText()
+			return nil
+		case 'r': // refresh feeds
+			a.prefetch()
 			return nil
 		}
 		return event
@@ -252,6 +268,8 @@ func (a *app) render() {
 	epsFlex := tview.NewFlex()
 	epsFlex.Box.SetBorder(true).SetTitle("[3] Episodes")
 	epsFlex.AddItem(a.catchupList, 0, 1, true)
+
+	a.updateHelpText()
 
 	panels := tview.NewFlex().
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
@@ -293,6 +311,15 @@ func (a *app) getStationList() {
 	}
 }
 
+// updates the help text to the keyboard shortcuts for the active pane
+func (a *app) updateHelpText() {
+	shortcuts := maps.Clone(a.globalKbdShortcuts)
+	if err := mergo.Merge(&shortcuts, a.kbdShortcuts[a.currentPane]); err != nil {
+		log.Fatal(err)
+	}
+	a.helpText.SetText(text.FormatHelp(shortcuts))
+}
+
 // update the list of shows for a station
 func (a *app) getShowsList(slug string) {
 	a.showsList.Clear()
@@ -332,22 +359,35 @@ func (a *app) getCatchupList(slug, id string) {
 
 // pre-fetch all data so it's in the cache
 func (a *app) prefetch() {
+	// clear the cache to force re-fetch
+	a.cache.Clear(context.TODO())
+
+	// fetch everything!
+	var g errgroup.Group
 	stations, err := a.gp.GetStations()
 	if err != nil {
 		return
 	}
 	brands := stations.PageProps.Feature.Blocks[0].Brands
-	if len(brands) == 0 {
-		return
-	}
 	for _, st := range brands {
-		cu, _ := a.gp.GetCatchup(st.Slug)
-		if len(cu.PageProps.CatchupInfo) > 0 {
-			for _, cu := range cu.PageProps.CatchupInfo {
-				go func() {
-					_, _ = a.gp.GetCatchupShows(st.Slug, cu.ID)
-				}()
+		st := st
+		g.Go(func() error {
+			cu, err := a.gp.GetCatchup(st.Slug)
+			if err != nil {
+				return err
 			}
-		}
+			for _, cu := range cu.PageProps.CatchupInfo {
+				cu := cu
+				g.Go(func() error {
+					_, err := a.gp.GetCatchupShows(st.Slug, cu.ID)
+					return err
+				})
+			}
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		log.Warnf("error fetching all data: %v", err)
 	}
 }
