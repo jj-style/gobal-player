@@ -1,11 +1,13 @@
 package service_test
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	gpMocks "github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer/mocks"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/server"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/service"
@@ -22,6 +24,7 @@ func Test_service_GetStations(t *testing.T) {
 		name     string
 		setup    func(f fields)
 		wantCode int
+		want     map[string]any
 	}{
 		{
 			name: "get stations happy",
@@ -34,6 +37,7 @@ func Test_service_GetStations(t *testing.T) {
 					)
 			},
 			wantCode: http.StatusOK,
+			want:     map[string]any{"stations": []*models.Station{{Name: "a", Slug: "a", StreamUrl: "a"}}},
 		},
 		{
 			name: "get stations unhappy",
@@ -54,16 +58,26 @@ func Test_service_GetStations(t *testing.T) {
 				tt.setup(f)
 			}
 
-			s := service.NewService(f.uc)
-			srv := server.NewServer(s)
+			router := givenService(f.uc)
 
 			w := httptest.NewRecorder()
 			request, err := http.NewRequest(http.MethodGet, "/stations", nil)
 			assert.NoError(t, err)
 
-			srv.Router.ServeHTTP(w, request)
+			router.ServeHTTP(w, request)
 
 			assert.Equal(t, tt.wantCode, w.Code)
+
+			if tt.want != nil {
+				wantj, _ := json.Marshal(tt.want)
+				assert.Equal(t, string(wantj), w.Body.String())
+			}
 		})
 	}
+}
+
+func givenService(uc *gpMocks.MockUseCase) *gin.Engine {
+	s := service.NewService(uc)
+	srv := server.NewServer(s)
+	return srv.Router
 }
