@@ -16,9 +16,8 @@ import (
 // Injectors from wire.go:
 
 func InitializeServer(config2 *config.Config) (*server.Server, error) {
-	client := server.NewHttpClient(config2)
 	cache := server.NewCache(config2)
-	globalPlayer, err := server.NewGlobalPlayer(config2, client, cache)
+	globalPlayer, err := server.NewGlobalPlayer(config2, cache)
 	if err != nil {
 		return nil, err
 	}

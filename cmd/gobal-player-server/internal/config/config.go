@@ -8,10 +8,9 @@ import (
 )
 
 type Config struct {
-	Host     string      `mapstructure:"host"`
-	Port     int         `mapstructure:"port"`
-	Cache    CacheConfig `mapstructure:"cache"`
-	Insecure bool        `mapstructure:"insecure"`
+	Host  string      `mapstructure:"host"`
+	Port  int         `mapstructure:"port"`
+	Cache CacheConfig `mapstructure:"cache"`
 }
 
 type CacheConfig struct {

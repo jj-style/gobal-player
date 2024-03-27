@@ -22,7 +22,7 @@ func Test_useCase_GetStations(t *testing.T) {
 		name    string
 		args    args
 		setup   func(fields, args)
-		want    []globalplayer.Station
+		want    []*models.Station
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
@@ -30,26 +30,24 @@ func Test_useCase_GetStations(t *testing.T) {
 			setup: func(f fields, _ args) {
 				f.gp.EXPECT().
 					GetStations().
-					Return(newStationsPageResponse(
-						models.StationBrand{
-							Slug: "slug",
-							Name: "name",
-							NationalStation: models.NationalStation{
-								StreamURL: "url",
-							},
-							ID: "id",
-						}),
-						nil)
+					Return([]*models.Station{
+						{
+							Id:        "id",
+							Name:      "name",
+							Slug:      "slug",
+							StreamUrl: "url",
+						},
+					}, nil)
 			},
-			want: []globalplayer.Station{
-				{Name: "name", Slug: "slug", StreamUrl: "url", Id: "id"},
+			want: []*models.Station{
+				{Id: "id", Name: "name", Slug: "slug", StreamUrl: "url"},
 			},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "unhappy",
 			setup: func(f fields, _ args) {
-				f.gp.EXPECT().GetStations().Return(models.StationsPageResponse{}, errors.New("boom"))
+				f.gp.EXPECT().GetStations().Return(nil, errors.New("boom"))
 			},
 			want:    nil,
 			wantErr: assert.Error,
@@ -71,20 +69,5 @@ func Test_useCase_GetStations(t *testing.T) {
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})
-	}
-}
-
-// test helper to return the StationBrands
-func newStationsPageResponse(stations ...models.StationBrand) models.StationsPageResponse {
-	return models.StationsPageResponse{
-		PageProps: models.StatsionsPageProps{
-			Feature: models.Feature{
-				Blocks: []models.Block{
-					models.Block{
-						Brands: stations,
-					},
-				},
-			},
-		},
 	}
 }

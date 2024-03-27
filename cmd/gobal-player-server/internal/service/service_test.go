@@ -6,10 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer"
 	gpMocks "github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer/mocks"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/server"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/service"
+	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -29,7 +29,7 @@ func Test_service_GetStations(t *testing.T) {
 				f.uc.EXPECT().
 					GetStations(mock.Anything).
 					Return(
-						[]globalplayer.Station{{Name: "a", Slug: "a", StreamUrl: "a"}},
+						[]*models.Station{{Name: "a", Slug: "a", StreamUrl: "a"}},
 						nil,
 					)
 			},

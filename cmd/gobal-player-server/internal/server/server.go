@@ -1,7 +1,6 @@
 package server
 
 import (
-	"crypto/tls"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,20 +25,16 @@ func NewServer(service service.GlobalPlayerService) *Server {
 	}
 }
 
-var GlobalPlayerProvider = wire.NewSet(NewHttpClient, NewCache, NewGlobalPlayer)
+var GlobalPlayerProvider = wire.NewSet(NewCache, NewGlobalPlayer)
 
 func NewCache(config *config.Config) resty.Cache[[]byte] {
 	return resty.NewCache[[]byte](config.Cache.Ttl)
 }
 
-func NewGlobalPlayer(config *config.Config, hc *http.Client, cache resty.Cache[[]byte]) (globalplayer.GlobalPlayer, error) {
-	buildId, err := globalplayer.GetBuildId(hc)
+func NewGlobalPlayer(config *config.Config, cache resty.Cache[[]byte]) (globalplayer.GlobalPlayer, error) {
+	buildId, err := globalplayer.GetBuildId(http.DefaultClient)
 	if err != nil {
 		return nil, err
 	}
-	return globalplayer.NewClient(hc, buildId, cache), nil
-}
-
-func NewHttpClient(config *config.Config) *http.Client {
-	return &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: config.Insecure}}}
+	return globalplayer.NewClient(http.DefaultClient, buildId, cache), nil
 }

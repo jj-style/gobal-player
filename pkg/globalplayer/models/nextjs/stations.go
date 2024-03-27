@@ -1,4 +1,4 @@
-package models
+package nextjs
 
 type StationsPageResponse struct {
 	PageProps StatsionsPageProps `json:"pageProps"`

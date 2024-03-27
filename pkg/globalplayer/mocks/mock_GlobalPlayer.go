@@ -20,83 +20,29 @@ func (_m *MockGlobalPlayer) EXPECT() *MockGlobalPlayer_Expecter {
 	return &MockGlobalPlayer_Expecter{mock: &_m.Mock}
 }
 
-// GetCatchup provides a mock function with given fields: slug
-func (_m *MockGlobalPlayer) GetCatchup(slug string) (models.CatchupResponse, error) {
-	ret := _m.Called(slug)
+// GetEpisodes provides a mock function with given fields: stationSlug, showId
+func (_m *MockGlobalPlayer) GetEpisodes(stationSlug string, showId string) ([]*models.Episode, error) {
+	ret := _m.Called(stationSlug, showId)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetCatchup")
+		panic("no return value specified for GetEpisodes")
 	}
 
-	var r0 models.CatchupResponse
+	var r0 []*models.Episode
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (models.CatchupResponse, error)); ok {
-		return rf(slug)
+	if rf, ok := ret.Get(0).(func(string, string) ([]*models.Episode, error)); ok {
+		return rf(stationSlug, showId)
 	}
-	if rf, ok := ret.Get(0).(func(string) models.CatchupResponse); ok {
-		r0 = rf(slug)
+	if rf, ok := ret.Get(0).(func(string, string) []*models.Episode); ok {
+		r0 = rf(stationSlug, showId)
 	} else {
-		r0 = ret.Get(0).(models.CatchupResponse)
-	}
-
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(slug)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// MockGlobalPlayer_GetCatchup_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetCatchup'
-type MockGlobalPlayer_GetCatchup_Call struct {
-	*mock.Call
-}
-
-// GetCatchup is a helper method to define mock.On call
-//   - slug string
-func (_e *MockGlobalPlayer_Expecter) GetCatchup(slug interface{}) *MockGlobalPlayer_GetCatchup_Call {
-	return &MockGlobalPlayer_GetCatchup_Call{Call: _e.mock.On("GetCatchup", slug)}
-}
-
-func (_c *MockGlobalPlayer_GetCatchup_Call) Run(run func(slug string)) *MockGlobalPlayer_GetCatchup_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(string))
-	})
-	return _c
-}
-
-func (_c *MockGlobalPlayer_GetCatchup_Call) Return(_a0 models.CatchupResponse, _a1 error) *MockGlobalPlayer_GetCatchup_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *MockGlobalPlayer_GetCatchup_Call) RunAndReturn(run func(string) (models.CatchupResponse, error)) *MockGlobalPlayer_GetCatchup_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// GetCatchupShows provides a mock function with given fields: slug, id
-func (_m *MockGlobalPlayer) GetCatchupShows(slug string, id string) (models.CatchupShowResponse, error) {
-	ret := _m.Called(slug, id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetCatchupShows")
-	}
-
-	var r0 models.CatchupShowResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string) (models.CatchupShowResponse, error)); ok {
-		return rf(slug, id)
-	}
-	if rf, ok := ret.Get(0).(func(string, string) models.CatchupShowResponse); ok {
-		r0 = rf(slug, id)
-	} else {
-		r0 = ret.Get(0).(models.CatchupShowResponse)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*models.Episode)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func(string, string) error); ok {
-		r1 = rf(slug, id)
+		r1 = rf(stationSlug, showId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -104,56 +50,58 @@ func (_m *MockGlobalPlayer) GetCatchupShows(slug string, id string) (models.Catc
 	return r0, r1
 }
 
-// MockGlobalPlayer_GetCatchupShows_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetCatchupShows'
-type MockGlobalPlayer_GetCatchupShows_Call struct {
+// MockGlobalPlayer_GetEpisodes_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetEpisodes'
+type MockGlobalPlayer_GetEpisodes_Call struct {
 	*mock.Call
 }
 
-// GetCatchupShows is a helper method to define mock.On call
-//   - slug string
-//   - id string
-func (_e *MockGlobalPlayer_Expecter) GetCatchupShows(slug interface{}, id interface{}) *MockGlobalPlayer_GetCatchupShows_Call {
-	return &MockGlobalPlayer_GetCatchupShows_Call{Call: _e.mock.On("GetCatchupShows", slug, id)}
+// GetEpisodes is a helper method to define mock.On call
+//   - stationSlug string
+//   - showId string
+func (_e *MockGlobalPlayer_Expecter) GetEpisodes(stationSlug interface{}, showId interface{}) *MockGlobalPlayer_GetEpisodes_Call {
+	return &MockGlobalPlayer_GetEpisodes_Call{Call: _e.mock.On("GetEpisodes", stationSlug, showId)}
 }
 
-func (_c *MockGlobalPlayer_GetCatchupShows_Call) Run(run func(slug string, id string)) *MockGlobalPlayer_GetCatchupShows_Call {
+func (_c *MockGlobalPlayer_GetEpisodes_Call) Run(run func(stationSlug string, showId string)) *MockGlobalPlayer_GetEpisodes_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(string), args[1].(string))
 	})
 	return _c
 }
 
-func (_c *MockGlobalPlayer_GetCatchupShows_Call) Return(_a0 models.CatchupShowResponse, _a1 error) *MockGlobalPlayer_GetCatchupShows_Call {
+func (_c *MockGlobalPlayer_GetEpisodes_Call) Return(_a0 []*models.Episode, _a1 error) *MockGlobalPlayer_GetEpisodes_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockGlobalPlayer_GetCatchupShows_Call) RunAndReturn(run func(string, string) (models.CatchupShowResponse, error)) *MockGlobalPlayer_GetCatchupShows_Call {
+func (_c *MockGlobalPlayer_GetEpisodes_Call) RunAndReturn(run func(string, string) ([]*models.Episode, error)) *MockGlobalPlayer_GetEpisodes_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// GetLive provides a mock function with given fields:
-func (_m *MockGlobalPlayer) GetLive() (models.LiveResponse, error) {
-	ret := _m.Called()
+// GetShows provides a mock function with given fields: stationSlug
+func (_m *MockGlobalPlayer) GetShows(stationSlug string) ([]*models.Show, error) {
+	ret := _m.Called(stationSlug)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetLive")
+		panic("no return value specified for GetShows")
 	}
 
-	var r0 models.LiveResponse
+	var r0 []*models.Show
 	var r1 error
-	if rf, ok := ret.Get(0).(func() (models.LiveResponse, error)); ok {
-		return rf()
+	if rf, ok := ret.Get(0).(func(string) ([]*models.Show, error)); ok {
+		return rf(stationSlug)
 	}
-	if rf, ok := ret.Get(0).(func() models.LiveResponse); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(string) []*models.Show); ok {
+		r0 = rf(stationSlug)
 	} else {
-		r0 = ret.Get(0).(models.LiveResponse)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*models.Show)
+		}
 	}
 
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(stationSlug)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -161,50 +109,53 @@ func (_m *MockGlobalPlayer) GetLive() (models.LiveResponse, error) {
 	return r0, r1
 }
 
-// MockGlobalPlayer_GetLive_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetLive'
-type MockGlobalPlayer_GetLive_Call struct {
+// MockGlobalPlayer_GetShows_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetShows'
+type MockGlobalPlayer_GetShows_Call struct {
 	*mock.Call
 }
 
-// GetLive is a helper method to define mock.On call
-func (_e *MockGlobalPlayer_Expecter) GetLive() *MockGlobalPlayer_GetLive_Call {
-	return &MockGlobalPlayer_GetLive_Call{Call: _e.mock.On("GetLive")}
+// GetShows is a helper method to define mock.On call
+//   - stationSlug string
+func (_e *MockGlobalPlayer_Expecter) GetShows(stationSlug interface{}) *MockGlobalPlayer_GetShows_Call {
+	return &MockGlobalPlayer_GetShows_Call{Call: _e.mock.On("GetShows", stationSlug)}
 }
 
-func (_c *MockGlobalPlayer_GetLive_Call) Run(run func()) *MockGlobalPlayer_GetLive_Call {
+func (_c *MockGlobalPlayer_GetShows_Call) Run(run func(stationSlug string)) *MockGlobalPlayer_GetShows_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run()
+		run(args[0].(string))
 	})
 	return _c
 }
 
-func (_c *MockGlobalPlayer_GetLive_Call) Return(_a0 models.LiveResponse, _a1 error) *MockGlobalPlayer_GetLive_Call {
+func (_c *MockGlobalPlayer_GetShows_Call) Return(_a0 []*models.Show, _a1 error) *MockGlobalPlayer_GetShows_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockGlobalPlayer_GetLive_Call) RunAndReturn(run func() (models.LiveResponse, error)) *MockGlobalPlayer_GetLive_Call {
+func (_c *MockGlobalPlayer_GetShows_Call) RunAndReturn(run func(string) ([]*models.Show, error)) *MockGlobalPlayer_GetShows_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetStations provides a mock function with given fields:
-func (_m *MockGlobalPlayer) GetStations() (models.StationsPageResponse, error) {
+func (_m *MockGlobalPlayer) GetStations() ([]*models.Station, error) {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetStations")
 	}
 
-	var r0 models.StationsPageResponse
+	var r0 []*models.Station
 	var r1 error
-	if rf, ok := ret.Get(0).(func() (models.StationsPageResponse, error)); ok {
+	if rf, ok := ret.Get(0).(func() ([]*models.Station, error)); ok {
 		return rf()
 	}
-	if rf, ok := ret.Get(0).(func() models.StationsPageResponse); ok {
+	if rf, ok := ret.Get(0).(func() []*models.Station); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(models.StationsPageResponse)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*models.Station)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func() error); ok {
@@ -233,12 +184,12 @@ func (_c *MockGlobalPlayer_GetStations_Call) Run(run func()) *MockGlobalPlayer_G
 	return _c
 }
 
-func (_c *MockGlobalPlayer_GetStations_Call) Return(_a0 models.StationsPageResponse, _a1 error) *MockGlobalPlayer_GetStations_Call {
+func (_c *MockGlobalPlayer_GetStations_Call) Return(_a0 []*models.Station, _a1 error) *MockGlobalPlayer_GetStations_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockGlobalPlayer_GetStations_Call) RunAndReturn(run func() (models.StationsPageResponse, error)) *MockGlobalPlayer_GetStations_Call {
+func (_c *MockGlobalPlayer_GetStations_Call) RunAndReturn(run func() ([]*models.Station, error)) *MockGlobalPlayer_GetStations_Call {
 	_c.Call.Return(run)
 	return _c
 }
