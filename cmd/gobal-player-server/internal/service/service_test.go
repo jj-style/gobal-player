@@ -3,6 +3,7 @@ package service_test
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -62,6 +63,139 @@ func Test_service_GetStations(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			request, err := http.NewRequest(http.MethodGet, "/stations", nil)
+			assert.NoError(t, err)
+
+			router.ServeHTTP(w, request)
+
+			assert.Equal(t, tt.wantCode, w.Code)
+
+			if tt.want != nil {
+				wantj, _ := json.Marshal(tt.want)
+				assert.Equal(t, string(wantj), w.Body.String())
+			}
+		})
+	}
+}
+
+func Test_service_GetShows(t *testing.T) {
+	type fields struct {
+		uc *gpMocks.MockUseCase
+	}
+	type args struct {
+		slug string
+	}
+	tests := []struct {
+		name     string
+		args     args
+		setup    func(f fields)
+		wantCode int
+		want     map[string]any
+	}{
+		{
+			name: "happy",
+			args: args{slug: "slug"},
+			setup: func(f fields) {
+				f.uc.EXPECT().
+					GetShows(mock.Anything, "slug").
+					Return(
+						[]*models.Show{{Name: "name"}},
+						nil,
+					)
+			},
+			wantCode: http.StatusOK,
+			want:     map[string]any{"shows": []*models.Show{{Name: "name"}}},
+		},
+		{
+			name: "unhappy",
+			args: args{slug: "slug"},
+			setup: func(f fields) {
+				f.uc.EXPECT().
+					GetShows(mock.Anything, "slug").
+					Return(nil, errors.New("boom"))
+			},
+			wantCode: http.StatusInternalServerError,
+		},
+	}
+	for _, tt := range tests {
+		f := fields{
+			uc: gpMocks.NewMockUseCase(t),
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.setup != nil {
+				tt.setup(f)
+			}
+
+			router := givenService(f.uc)
+
+			w := httptest.NewRecorder()
+			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/shows/%s", tt.args.slug), nil)
+			assert.NoError(t, err)
+
+			router.ServeHTTP(w, request)
+
+			assert.Equal(t, tt.wantCode, w.Code)
+
+			if tt.want != nil {
+				wantj, _ := json.Marshal(tt.want)
+				assert.Equal(t, string(wantj), w.Body.String())
+			}
+		})
+	}
+}
+
+func Test_service_GetEpisodes(t *testing.T) {
+	type fields struct {
+		uc *gpMocks.MockUseCase
+	}
+	type args struct {
+		slug string
+		id   string
+	}
+	tests := []struct {
+		name     string
+		args     args
+		setup    func(f fields)
+		wantCode int
+		want     map[string]any
+	}{
+		{
+			name: "happy",
+			args: args{slug: "slug", id: "id"},
+			setup: func(f fields) {
+				f.uc.EXPECT().
+					GetEpisodes(mock.Anything, "slug", "id").
+					Return(
+						[]*models.Episode{{Name: "name"}},
+						nil,
+					)
+			},
+			wantCode: http.StatusOK,
+			want:     map[string]any{"episodes": []*models.Episode{{Name: "name"}}},
+		},
+		{
+			name: "unhappy",
+			args: args{slug: "slug", id: "id"},
+			setup: func(f fields) {
+				f.uc.EXPECT().
+					GetEpisodes(mock.Anything, "slug", "id").
+					Return(nil, errors.New("boom"))
+			},
+			wantCode: http.StatusInternalServerError,
+		},
+	}
+	for _, tt := range tests {
+		f := fields{
+			uc: gpMocks.NewMockUseCase(t),
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.setup != nil {
+				tt.setup(f)
+			}
+
+			router := givenService(f.uc)
+
+			w := httptest.NewRecorder()
+			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/episodes/%s/%s", tt.args.slug, tt.args.id), nil)
 			assert.NoError(t, err)
 
 			router.ServeHTTP(w, request)

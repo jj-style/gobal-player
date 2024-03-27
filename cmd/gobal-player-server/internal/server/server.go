@@ -15,7 +15,7 @@ type Server struct {
 	Router *gin.Engine
 }
 
-func NewServer(service service.GlobalPlayerService) *Server {
+func NewServer(service *service.Service) *Server {
 	r := gin.Default()
 
 	addRoutes(r, service)

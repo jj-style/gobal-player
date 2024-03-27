@@ -22,7 +22,7 @@ func InitializeServer(config2 *config.Config) (*server.Server, error) {
 		return nil, err
 	}
 	useCase := globalplayer.NewUseCase(globalPlayer)
-	globalPlayerService := service.NewService(useCase)
-	serverServer := server.NewServer(globalPlayerService)
+	serviceService := service.NewService(useCase)
+	serverServer := server.NewServer(serviceService)
 	return serverServer, nil
 }
