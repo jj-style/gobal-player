@@ -1,0 +1,9 @@
+.gitignore
+Dockerfile
+*.yaml
+*.yml
+*.xml
+*.md
+justfile
+LICENSE
+bin/

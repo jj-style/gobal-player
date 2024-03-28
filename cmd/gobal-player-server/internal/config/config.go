@@ -31,7 +31,12 @@ func NewConfig(dir string) (*Config, error) {
 	viper.SetEnvPrefix("gp")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// Config file not found; ignore error if desired
+		} else {
+			// Config file was found but another error was produced
+			return nil, err
+		}
 	}
 	c := &Config{}
 	if err := viper.Unmarshal(c); err != nil {
