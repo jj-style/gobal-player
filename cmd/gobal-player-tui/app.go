@@ -28,14 +28,14 @@ type app struct {
 	hc     *http.Client
 	cache  resty.Cache[[]byte]
 
-	stations     []models.StationBrand
+	stations     []*models.Station
 	stationsList *tview.List
 
-	shows     []models.CatchupInfo
+	shows     []*models.Show
 	showsList *tview.List
 
-	catchups    []models.Episode
-	catchupList *tview.List
+	episodes     []*models.Episode
+	episodesList *tview.List
 
 	stationSlug string
 	showId      string
@@ -141,7 +141,7 @@ func (a *app) initViews() {
 			viper.Set("favourite", (a.stations[stList.GetCurrentItem()].Slug))
 		case k == tcell.KeyEnter:
 			station := a.stations[stList.GetCurrentItem()]
-			a.stream(a.stationsList, lo.Map(a.stations, func(item models.StationBrand, _ int) streamItem { return streamItem{Name: item.Name, Id: item.ID} }), station.NationalStation.StreamURL)
+			a.stream(a.stationsList, lo.Map(a.stations, func(item *models.Station, _ int) streamItem { return streamItem{Name: item.Name, Id: item.Id} }), station.StreamUrl)
 		}
 		return nil
 	})
@@ -149,10 +149,10 @@ func (a *app) initViews() {
 
 	showList := tview.NewList().ShowSecondaryText(false).
 		SetChangedFunc(func(idx int, mainText, secondaryText string, shortcut rune) {
-			a.showId = a.shows[idx].ID
+			a.showId = a.shows[idx].Id
 			go func() {
 				a.tv.QueueUpdateDraw(func() {
-					a.getCatchupList(a.stationSlug, a.shows[idx].ID)
+					a.getEpisodes(a.stationSlug, a.shows[idx].Id)
 				})
 			}()
 		})
@@ -169,9 +169,9 @@ func (a *app) initViews() {
 	})
 	a.showsList = showList
 
-	cuList := tview.NewList().ShowSecondaryText(false)
-	cuList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if cuList.GetItemCount() == 0 {
+	epList := tview.NewList().ShowSecondaryText(false)
+	epList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if epList.GetItemCount() == 0 {
 			return nil
 		}
 
@@ -179,31 +179,31 @@ func (a *app) initViews() {
 		k := event.Key()
 		switch {
 		case r == 'j', k == tcell.KeyDown:
-			cuList.SetCurrentItem((cuList.GetCurrentItem() + 1) % cuList.GetItemCount())
+			epList.SetCurrentItem((epList.GetCurrentItem() + 1) % epList.GetItemCount())
 		case r == 'k', k == tcell.KeyUp:
-			cuList.SetCurrentItem((cuList.GetCurrentItem() - 1) % cuList.GetItemCount())
+			epList.SetCurrentItem((epList.GetCurrentItem() - 1) % epList.GetItemCount())
 		case r == 'd':
-			mainText, _ := cuList.GetItemText(cuList.GetCurrentItem())
-			curr := cuList.GetCurrentItem()
-			cuList.SetItemText(cuList.GetCurrentItem(), mainText+" [blue](downloading...)", "")
+			mainText, _ := epList.GetItemText(epList.GetCurrentItem())
+			curr := epList.GetCurrentItem()
+			epList.SetItemText(epList.GetCurrentItem(), mainText+" [blue](downloading...)", "")
 			go func() {
-				if err := resty.DownloadFile(a.hc, fmt.Sprintf("%s.m4a", mainText), a.catchups[curr].StreamURL); err != nil {
+				if err := resty.DownloadFile(a.hc, fmt.Sprintf("%s.m4a", mainText), a.episodes[curr].StreamUrl); err != nil {
 					log.Fatal(err)
 				}
 				a.tv.QueueUpdateDraw(func() {
-					cuList.SetItemText(curr, mainText, "")
+					epList.SetItemText(curr, mainText, "")
 				})
 			}()
 		case k == tcell.KeyEnter:
-			ep := a.catchups[cuList.GetCurrentItem()]
-			a.stream(a.catchupList, lo.Map(a.catchups, func(item models.Episode, _ int) streamItem {
-				mainText := fmt.Sprintf("%s - %s - %s", item.Title, item.StartDate.Format("Mon 2006-01-02"), item.Availability)
-				return streamItem{Name: mainText, Id: item.ID}
-			}), ep.StreamURL)
+			ep := a.episodes[epList.GetCurrentItem()]
+			a.stream(a.episodesList, lo.Map(a.episodes, func(item *models.Episode, _ int) streamItem {
+				mainText := fmt.Sprintf("%s - %s - %s", item.Name, item.Aired.Format("Mon 2006-01-02"), item.Availability)
+				return streamItem{Name: mainText, Id: item.Id}
+			}), ep.StreamUrl)
 		}
 		return nil
 	})
-	a.catchupList = cuList
+	a.episodesList = epList
 
 	// create keyboard shortcut help
 	a.kbdShortcuts[1] = map[string]string{"\u21B5": "play/pause", "f": "favourite"}
@@ -241,7 +241,7 @@ func (a *app) initTui() {
 			a.updateHelpText()
 			return nil
 		case 51: // 2
-			a.tv.SetFocus(a.catchupList)
+			a.tv.SetFocus(a.episodesList)
 			a.currentPane = 3
 			a.updateHelpText()
 			return nil
@@ -266,7 +266,7 @@ func (a *app) render() {
 
 	epsFlex := tview.NewFlex()
 	epsFlex.Box.SetBorder(true).SetTitle("[3] Episodes")
-	epsFlex.AddItem(a.catchupList, 0, 1, true)
+	epsFlex.AddItem(a.episodesList, 0, 1, true)
 
 	a.updateHelpText()
 
@@ -288,18 +288,18 @@ func (a *app) render() {
 // update the list of stations
 func (a *app) getStationList() {
 	a.stationsList.Clear()
-	a.stations = make([]models.StationBrand, 0)
 
 	stations, err := a.gp.GetStations()
 	if err != nil {
 		log.Fatal(err)
 	}
+	a.stations = stations
 
-	for idx, station := range stations.PageProps.Feature.Blocks[0].Brands {
-		a.stations = append(a.stations, station)
+	for idx, station := range stations {
 		text := station.Name
 		a.stationsList.AddItem(text, "", 0, nil)
 
+		// if station is favourited, select in the UI
 		if station.Slug == viper.GetString("favourite") {
 			go func() {
 				a.tv.QueueUpdateDraw(func() {
@@ -322,36 +322,34 @@ func (a *app) updateHelpText() {
 // update the list of shows for a station
 func (a *app) getShowsList(slug string) {
 	a.showsList.Clear()
-	a.shows = make([]models.CatchupInfo, 0)
 
 	if slug != "" {
-		shows, err := a.gp.GetCatchup(slug)
+		shows, err := a.gp.GetShows(slug)
 		if err != nil {
 			log.Fatal(err)
 		}
+		a.shows = shows
 
-		for _, show := range shows.PageProps.CatchupInfo {
-			a.shows = append(a.shows, show)
-			a.showsList.AddItem(show.Title, "", 0, nil)
+		for _, show := range shows {
+			a.showsList.AddItem(show.Name, "", 0, nil)
 		}
 	}
 }
 
 // update the catchup list of the given station and show
-func (a *app) getCatchupList(slug, id string) {
-	a.catchupList.Clear()
-	a.catchups = make([]models.Episode, 0)
+func (a *app) getEpisodes(slug, id string) {
+	a.episodesList.Clear()
 
 	if slug != "" {
-		shows, err := a.gp.GetCatchupShows(slug, id)
+		episodes, err := a.gp.GetEpisodes(slug, id)
 		if err != nil {
 			log.Fatal(err)
 		}
+		a.episodes = episodes
 
-		for _, show := range shows.PageProps.CatchupInfo.Episodes {
-			a.catchups = append(a.catchups, show)
-			text := fmt.Sprintf("%s - %s - %s", show.Title, show.StartDate.Format("Mon 2006-01-02"), show.Availability)
-			a.catchupList.AddItem(text, "", 0, nil)
+		for _, show := range episodes {
+			text := fmt.Sprintf("%s - %s - %s", show.Name, show.Aired.Format("Mon 2006-01-02"), show.Availability)
+			a.episodesList.AddItem(text, "", 0, nil)
 		}
 	}
 }
@@ -367,18 +365,18 @@ func (a *app) prefetch() {
 	if err != nil {
 		return
 	}
-	brands := stations.PageProps.Feature.Blocks[0].Brands
-	for _, st := range brands {
+
+	for _, st := range stations {
 		st := st
 		g.Go(func() error {
-			cu, err := a.gp.GetCatchup(st.Slug)
+			shows, err := a.gp.GetShows(st.Slug)
 			if err != nil {
 				return err
 			}
-			for _, cu := range cu.PageProps.CatchupInfo {
-				cu := cu
+			for _, sh := range shows {
+				sh := sh
 				g.Go(func() error {
-					_, err := a.gp.GetCatchupShows(st.Slug, cu.ID)
+					_, err := a.gp.GetEpisodes(st.Slug, sh.Id)
 					return err
 				})
 			}

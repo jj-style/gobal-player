@@ -1,4 +1,4 @@
-package models
+package nextjs
 
 type LiveResponse struct {
 	PageProps LivePageProps `json:"pageProps"`

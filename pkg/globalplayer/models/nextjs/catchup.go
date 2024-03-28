@@ -1,4 +1,4 @@
-package models
+package nextjs
 
 type CatchupResponse struct {
 	PageProps CatchupPageProps `json:"pageProps"`

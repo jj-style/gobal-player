@@ -1,4 +1,4 @@
-package models
+package nextjs
 
 type Brand struct {
 	BrandID             string `json:"brandId"`
