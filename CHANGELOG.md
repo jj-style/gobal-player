@@ -1,6 +1,13 @@
 # Changelog
 
-## [v0.1.10](https://github.com/jj-style/gobal-player/compare/v0.1.9...HEAD) (2024-03-28)
+## [v0.1.11](https://github.com/jj-style/gobal-player/compare/v0.1.10...HEAD) (2024-03-28)
+
+### Fixes
+
+* **docker:** fix docker image name for release
+([c0f829a](https://github.com/jj-style/gobal-player/commit/c0f829a65afb5f1a69e92748e018d9185a7800b5))
+
+### [v0.1.10](https://github.com/jj-style/gobal-player/compare/v0.1.9...v0.1.10) (2024-03-28)
 
 ### [v0.1.9](https://github.com/jj-style/gobal-player/compare/v0.1.8...v0.1.9) (2024-03-28)
 
