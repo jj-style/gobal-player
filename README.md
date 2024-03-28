@@ -32,4 +32,4 @@ RESTful server with friendly APIs to global player, and more features coming soo
 
 ### Docker
 
-Run with docker: `docker run --rm -it -p 8080:8080 ghcr.io/jj-style/gobal-player-server@v0.1.9`
+Run with docker: `docker run --rm -it -p 8080:8080 ghcr.io/jj-style/gobal-player-server:v0.1.9`

@@ -45,7 +45,7 @@ release semver='bump':
     nextVersion=$(convco version --{{semver}})
 
     convco changelog -u $nextVersion > CHANGELOG.md
-    sed -i "s/[@:]v$currentVersion/@v$nextVersion/g" README.md
+    sed -i "s/\([@:]\)v$currentVersion/\1v$nextVersion/g" README.md
 
     git add README.md CHANGELOG.md
     convco commit --chore --message "release $currentVersion -> $nextVersion"
