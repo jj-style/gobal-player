@@ -1,8 +1,10 @@
 # Changelog
 
-## [v0.1.9](https://github.com/jj-style/gobal-player/compare/v0.1.8...HEAD) (2024-03-28)
+## [v0.1.10](https://github.com/jj-style/gobal-player/compare/v0.1.9...HEAD) (2024-03-28)
 
-### Features
+### [v0.1.9](https://github.com/jj-style/gobal-player/compare/v0.1.8...v0.1.9) (2024-03-28)
+
+#### Features
 
 * **server:** implement server to global player (#16)
 ([469a7aa](https://github.com/jj-style/gobal-player/commit/469a7aa72a6dcd0b8248070da810c9a097f51b15)),
