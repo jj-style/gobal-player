@@ -1,8 +1,18 @@
 # Changelog
 
-## [v0.1.8](https://github.com/jj-style/gobal-player/compare/v0.1.7...HEAD) (2024-03-20)
+## [v0.1.9](https://github.com/jj-style/gobal-player/compare/v0.1.8...HEAD) (2024-03-28)
 
 ### Features
+
+* **server:** implement server to global player (#16)
+([469a7aa](https://github.com/jj-style/gobal-player/commit/469a7aa72a6dcd0b8248070da810c9a097f51b15)),
+closes [#16](https://github.com/jj-style/gobal-player/issues/16)
+* **tui:** add shortcut to clear cache and refetch data
+([8f57aef](https://github.com/jj-style/gobal-player/commit/8f57aef220df3b6799ba371e8961dcc2ac4474de))
+
+### [v0.1.8](https://github.com/jj-style/gobal-player/compare/v0.1.7...v0.1.8) (2024-03-20)
+
+#### Features
 
 * **tui:** set preferred station in config
 ([de5040e](https://github.com/jj-style/gobal-player/commit/de5040eb7799b98f85b0a6f8107b22dcf7511a85)),

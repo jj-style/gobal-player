@@ -17,7 +17,7 @@ Published in the [AUR: gobal-player-tui](https://aur.archlinux.org/packages/goba
 
 #### From source
 ```bash
-go install github.com/jj-style/gobal-player/cmd/gobal-player-tui@v0.1.8
+go install github.com/jj-style/gobal-player/cmd/gobal-player-tui@v0.1.9
 gobal-player-tui
 ```
 
@@ -32,4 +32,4 @@ RESTful server with friendly APIs to global player, and more features coming soo
 
 ### Docker
 
-Run with docker: `docker run --rm -it -p 8080:8080 ghcr.io/jj-style/gobal-player-server:v0.1.8`
+Run with docker: `docker run --rm -it -p 8080:8080 ghcr.io/jj-style/gobal-player-server@v0.1.9`
