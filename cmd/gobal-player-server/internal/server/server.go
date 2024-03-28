@@ -9,6 +9,9 @@ import (
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/service"
 	"github.com/jj-style/gobal-player/pkg/globalplayer"
 	"github.com/jj-style/gobal-player/pkg/resty"
+	healthcheck "github.com/tavsec/gin-healthcheck"
+	"github.com/tavsec/gin-healthcheck/checks"
+	healthcheckConfig "github.com/tavsec/gin-healthcheck/config"
 )
 
 type Server struct {
@@ -17,6 +20,9 @@ type Server struct {
 
 func NewServer(service *service.Service) *Server {
 	r := gin.Default()
+
+	pingCheck := checks.NewPingCheck("https://www.globalplayer.com", "GET", 1000, nil, nil)
+	healthcheck.New(r, healthcheckConfig.DefaultConfig(), []checks.Check{pingCheck})
 
 	addRoutes(r, service)
 
