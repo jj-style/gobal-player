@@ -23,13 +23,13 @@ gobal-player-tui
 
 ![tui-demo](.github/assets/tui.gif)
 
-### Developing
-
-Please install [pre-commit](https://pre-commit.com/#install), and [just](https://github.com/casey/just?tab=readme-ov-file#installation) and run `just hooks` to initialize your git pre-commit hooks.
-
 ## gobal-player-server
 RESTful server with friendly APIs to global player, and more features coming soon!
 
 ### Docker
 
 Run with docker: `docker run --rm -it -p 8080:8080 ghcr.io/jj-style/gobal-player/gobal-player-server:v0.1.11`
+
+## Developing
+
+Please install [pre-commit](https://pre-commit.com/#install), and [just](https://github.com/casey/just?tab=readme-ov-file#installation) and run `just hooks` to initialize your git pre-commit hooks.
