@@ -9,6 +9,7 @@ require (
 	github.com/gdamore/tcell/v2 v2.7.4
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang/mock v1.6.0
+	github.com/gorilla/feeds v1.1.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rivo/tview v0.0.0-20240225120200-5605142ca62e
 	github.com/samber/lo v1.39.0

@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/feeds"
 	gpMocks "github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer/mocks"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/server"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/service"
@@ -206,6 +207,123 @@ func Test_service_GetEpisodes(t *testing.T) {
 				wantj, _ := json.Marshal(tt.want)
 				assert.Equal(t, string(wantj), w.Body.String())
 			}
+		})
+	}
+}
+
+func Test_service_GetEpisodesRss(t *testing.T) {
+	type fields struct {
+		uc *gpMocks.MockUseCase
+	}
+	type args struct {
+		slug string
+		id   string
+	}
+	tests := []struct {
+		name            string
+		args            args
+		setup           func(f fields)
+		wantCode        int
+		wantContentType string
+	}{
+		{
+			name: "happy",
+			args: args{slug: "slug", id: "id"},
+			setup: func(f fields) {
+				f.uc.EXPECT().GetEpisodesFeed(mock.Anything, "slug", "id").
+					Return(&feeds.Feed{Title: "title", Description: "description", Id: "id"}, nil)
+			},
+			wantCode:        http.StatusOK,
+			wantContentType: "application/xml",
+		},
+		{
+			name: "unhappy",
+			args: args{slug: "slug", id: "id"},
+			setup: func(f fields) {
+				f.uc.EXPECT().GetEpisodesFeed(mock.Anything, "slug", "id").
+					Return(nil, errors.New("boom"))
+			},
+			wantCode:        http.StatusInternalServerError,
+			wantContentType: "application/json; charset=utf-8",
+		},
+	}
+	for _, tt := range tests {
+		f := fields{
+			uc: gpMocks.NewMockUseCase(t),
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.setup != nil {
+				tt.setup(f)
+			}
+
+			router := givenService(f.uc)
+
+			w := httptest.NewRecorder()
+			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/episodes/%s/%s/rss", tt.args.slug, tt.args.id), nil)
+			assert.NoError(t, err)
+
+			router.ServeHTTP(w, request)
+
+			assert.Equal(t, tt.wantCode, w.Code)
+			assert.Equal(t, tt.wantContentType, w.Header().Get("content-type"))
+		})
+	}
+}
+
+func Test_service_GetAllShowsRss(t *testing.T) {
+	type fields struct {
+		uc *gpMocks.MockUseCase
+	}
+	type args struct {
+		slug string
+	}
+	tests := []struct {
+		name            string
+		args            args
+		setup           func(f fields)
+		wantCode        int
+		wantContentType string
+	}{
+		{
+			name: "happy",
+			args: args{slug: "slug"},
+			setup: func(f fields) {
+				f.uc.EXPECT().GetAllShowsFeed(mock.Anything, "slug").
+					Return(&feeds.Feed{Title: "title", Description: "description", Id: "id"}, nil)
+			},
+			wantCode:        http.StatusOK,
+			wantContentType: "application/xml",
+		},
+		{
+			name: "unhappy",
+			args: args{slug: "slug"},
+			setup: func(f fields) {
+				f.uc.EXPECT().GetAllShowsFeed(mock.Anything, "slug").
+					Return(nil, errors.New("boom"))
+			},
+			wantCode:        http.StatusInternalServerError,
+			wantContentType: "application/json; charset=utf-8",
+		},
+	}
+	for _, tt := range tests {
+		f := fields{
+			uc: gpMocks.NewMockUseCase(t),
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.setup != nil {
+				tt.setup(f)
+			}
+
+			router := givenService(f.uc)
+
+			w := httptest.NewRecorder()
+			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/shows/%s/rss", tt.args.slug), nil)
+			assert.NoError(t, err)
+
+			router.ServeHTTP(w, request)
+
+			assert.Equal(t, tt.wantCode, w.Code)
+			assert.Equal(t, tt.wantContentType, w.Header().Get("content-type"))
 		})
 	}
 }
