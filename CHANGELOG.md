@@ -1,8 +1,15 @@
 # Changelog
 
-## [v0.1.16](https://github.com/jj-style/gobal-player/compare/v0.1.15...HEAD) (2024-03-31)
+## [v0.1.17](https://github.com/jj-style/gobal-player/compare/v0.1.16...HEAD) (2024-03-31)
 
 ### Fixes
+
+* **ci:** debug release notes
+([e20a8db](https://github.com/jj-style/gobal-player/commit/e20a8dbd5ed2aef1ba0d157dd7d04fa8e9669d13))
+
+### [v0.1.16](https://github.com/jj-style/gobal-player/compare/v0.1.15...v0.1.16) (2024-03-31)
+
+#### Fixes
 
 * test release
 ([f1e4e62](https://github.com/jj-style/gobal-player/commit/f1e4e621c3f998f4d49c1ec813752eb37f70cc6c))
