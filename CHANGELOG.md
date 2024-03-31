@@ -1,8 +1,22 @@
 # Changelog
 
-## [v0.1.14](https://github.com/jj-style/gobal-player/compare/v0.1.13...HEAD) (2024-03-31)
+## [v0.1.15](https://github.com/jj-style/gobal-player/compare/v0.1.14...HEAD) (2024-03-31)
+
+### Features
+
+* **server:** RSS feeds for shows and episodes (#20)
+([ea8b366](https://github.com/jj-style/gobal-player/commit/ea8b3662a5ec915ab3d6f77fe57e37c258cd3526)),
+closes [#20](https://github.com/jj-style/gobal-player/issues/20)
+[#17](https://github.com/jj-style/gobal-player/issues/17)
 
 ### Fixes
+
+* **ci:** convco local path to binary
+([f2b35d4](https://github.com/jj-style/gobal-player/commit/f2b35d4ef8d57f7557da50f385bc2e69ea76afdd))
+
+### [v0.1.14](https://github.com/jj-style/gobal-player/compare/v0.1.13...v0.1.14) (2024-03-31)
+
+#### Fixes
 
 * **ci:** convco version missing "v" prefix
 ([a4a3f42](https://github.com/jj-style/gobal-player/commit/a4a3f42a24e8e6586949460f86f27ff2c8357174))
