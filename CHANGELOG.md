@@ -1,8 +1,15 @@
 # Changelog
 
-## [v0.1.17](https://github.com/jj-style/gobal-player/compare/v0.1.16...HEAD) (2024-03-31)
+## [v0.1.18](https://github.com/jj-style/gobal-player/compare/v0.1.17...HEAD) (2024-03-31)
 
 ### Fixes
+
+* **ci:** changelog by fetch depth all
+([6cdc690](https://github.com/jj-style/gobal-player/commit/6cdc6902f766ce57684fd8e90579ea36733001a4))
+
+### [v0.1.17](https://github.com/jj-style/gobal-player/compare/v0.1.16...v0.1.17) (2024-03-31)
+
+#### Fixes
 
 * **ci:** debug release notes
 ([e20a8db](https://github.com/jj-style/gobal-player/commit/e20a8dbd5ed2aef1ba0d157dd7d04fa8e9669d13))
