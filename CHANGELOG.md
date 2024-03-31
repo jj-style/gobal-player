@@ -1,8 +1,8 @@
 # Changelog
 
-## [v0.1.12](https://github.com/jj-style/gobal-player/compare/v0.1.11...HEAD) (2024-03-31)
+### [v0.1.12](https://github.com/jj-style/gobal-player/compare/v0.1.11...v0.1.12) (2024-03-31)
 
-### Features
+#### Features
 
 * **server:** RSS feeds for shows and episodes
 ([7fd44c3](https://github.com/jj-style/gobal-player/commit/7fd44c37336df966d6f271557c1201d57c718bab)),
