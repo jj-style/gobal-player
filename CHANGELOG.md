@@ -1,8 +1,16 @@
 # Changelog
 
-## [v0.1.11](https://github.com/jj-style/gobal-player/compare/v0.1.10...HEAD) (2024-03-28)
+## [v0.1.12](https://github.com/jj-style/gobal-player/compare/v0.1.11...HEAD) (2024-03-31)
 
-### Fixes
+### Features
+
+* **server:** RSS feeds for shows and episodes
+([7fd44c3](https://github.com/jj-style/gobal-player/commit/7fd44c37336df966d6f271557c1201d57c718bab)),
+closes [#17](https://github.com/jj-style/gobal-player/issues/17)
+
+### [v0.1.11](https://github.com/jj-style/gobal-player/compare/v0.1.10...v0.1.11) (2024-03-28)
+
+#### Fixes
 
 * **docker:** fix docker image name for release
 ([c0f829a](https://github.com/jj-style/gobal-player/commit/c0f829a65afb5f1a69e92748e018d9185a7800b5))
