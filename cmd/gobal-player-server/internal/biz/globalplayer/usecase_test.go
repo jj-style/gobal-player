@@ -3,8 +3,11 @@ package globalplayer_test
 import (
 	"context"
 	"errors"
+	"slices"
+	"strings"
 	"testing"
 
+	"github.com/gorilla/feeds"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer"
 	gpMocks "github.com/jj-style/gobal-player/pkg/globalplayer/mocks"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
@@ -188,6 +191,346 @@ func Test_useCase_GetEpisodes(t *testing.T) {
 
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_useCase_GetStation(t *testing.T) {
+	var ctx = context.Background()
+	type fields struct {
+		gp *gpMocks.MockGlobalPlayer
+	}
+	type args struct {
+		stationSlug string
+	}
+	tests := []struct {
+		name    string
+		setup   func(f *fields)
+		args    args
+		want    *models.Station
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "happy",
+			setup: func(f *fields) {
+				f.gp.EXPECT().
+					GetStations().
+					Return([]*models.Station{{Id: "a", Name: "a", Slug: "a"}, {Id: "b", Name: "b", Slug: "b"}}, nil)
+			},
+			args:    args{stationSlug: "b"},
+			want:    &models.Station{Id: "b", Name: "b", Slug: "b"},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "error getting stations",
+			setup: func(f *fields) {
+				f.gp.EXPECT().
+					GetStations().
+					Return(nil, errors.New("boom"))
+			},
+			args:    args{stationSlug: "a"},
+			want:    nil,
+			wantErr: assert.Error,
+		},
+		{
+			name: "station not found",
+			setup: func(f *fields) {
+				f.gp.EXPECT().
+					GetStations().
+					Return([]*models.Station{{Id: "a", Name: "a", Slug: "a"}}, nil)
+			},
+			args:    args{stationSlug: "b"},
+			want:    nil,
+			wantErr: assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		f := &fields{
+			gp: gpMocks.NewMockGlobalPlayer(t),
+		}
+		if tt.setup != nil {
+			tt.setup(f)
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			u := globalplayer.NewUseCase(f.gp)
+			got, err := u.GetStation(ctx, tt.args.stationSlug)
+			tt.wantErr(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_useCase_GetShow(t *testing.T) {
+	var ctx = context.Background()
+	type fields struct {
+		gp *gpMocks.MockGlobalPlayer
+	}
+	type args struct {
+		stationSlug string
+		showId      string
+	}
+	tests := []struct {
+		name    string
+		setup   func(f *fields)
+		args    args
+		want    *models.Show
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "happy",
+			setup: func(f *fields) {
+				f.gp.EXPECT().
+					GetShows("station").
+					Return([]*models.Show{{Id: "a", Name: "a"}, {Id: "b", Name: "b"}}, nil)
+			},
+			args:    args{stationSlug: "station", showId: "b"},
+			want:    &models.Show{Id: "b", Name: "b"},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "error getting shows",
+			setup: func(f *fields) {
+				f.gp.EXPECT().
+					GetShows("station").
+					Return(nil, errors.New("boom"))
+			},
+			args:    args{stationSlug: "station", showId: "b"},
+			want:    nil,
+			wantErr: assert.Error,
+		},
+		{
+			name: "show not found",
+			setup: func(f *fields) {
+				f.gp.EXPECT().
+					GetShows("station").
+					Return([]*models.Show{{Id: "a", Name: "a"}}, nil)
+			},
+			args:    args{stationSlug: "station", showId: "b"},
+			want:    nil,
+			wantErr: assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		f := &fields{
+			gp: gpMocks.NewMockGlobalPlayer(t),
+		}
+		if tt.setup != nil {
+			tt.setup(f)
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			u := globalplayer.NewUseCase(f.gp)
+			got, err := u.GetShow(ctx, tt.args.stationSlug, tt.args.showId)
+			tt.wantErr(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_useCase_GetEpisodesFeed(t *testing.T) {
+	var ctx = context.Background()
+	type fields struct {
+		gp *gpMocks.MockGlobalPlayer
+	}
+	type args struct {
+		stationSlug string
+		showId      string
+	}
+	tests := []struct {
+		name    string
+		setup   func(f *fields)
+		args    args
+		want    *feeds.Feed
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "happy",
+			args: args{stationSlug: "station", showId: "show"},
+			setup: func(f *fields) {
+				f.gp.EXPECT().GetEpisodes("station", "show").
+					Return([]*models.Episode{{Id: "id", Name: "episode 1", Description: "episode", StreamUrl: "episode.mp3"}}, nil)
+
+				f.gp.EXPECT().
+					GetShows("station").
+					Return([]*models.Show{{Id: "show", Name: "show", ImageUrl: "show.jpg"}}, nil)
+			},
+			want: &feeds.Feed{
+				Title:       "show",
+				Description: "episode",
+				Image:       &feeds.Image{Url: "show.jpg"},
+				Items: []*feeds.Item{
+					{
+						Id:          "id",
+						Title:       "episode 1: Monday 01 January 0001",
+						Description: "episode<br/><br/>Available until Monday 01 January 0001 00:00:00.",
+						Enclosure:   &feeds.Enclosure{Url: "episode.mp3", Type: "audio/mpeg", Length: "1"},
+						Link:        &feeds.Link{Href: "episode.mp3"},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "error getting episodes",
+			args: args{stationSlug: "station", showId: "show"},
+			setup: func(f *fields) {
+				f.gp.EXPECT().GetEpisodes("station", "show").
+					Return(nil, errors.New("boom"))
+			},
+			want:    nil,
+			wantErr: assert.Error,
+		},
+		{
+			name: "error getting show",
+			args: args{stationSlug: "station", showId: "show"},
+			setup: func(f *fields) {
+				f.gp.EXPECT().GetEpisodes("station", "show").
+					Return([]*models.Episode{{Id: "id", Name: "episode 1", Description: "episode", StreamUrl: "episode.mp3"}}, nil)
+
+				f.gp.EXPECT().
+					GetShows("station").
+					Return(nil, errors.New("boom"))
+			},
+			want:    nil,
+			wantErr: assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		f := &fields{
+			gp: gpMocks.NewMockGlobalPlayer(t),
+		}
+		if tt.setup != nil {
+			tt.setup(f)
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			u := globalplayer.NewUseCase(f.gp)
+			got, err := u.GetEpisodesFeed(ctx, tt.args.stationSlug, tt.args.showId)
+			tt.wantErr(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_useCase_GetAllShowsFeed(t *testing.T) {
+	var ctx = context.Background()
+	type fields struct {
+		gp *gpMocks.MockGlobalPlayer
+	}
+	type args struct {
+		stationSlug string
+	}
+	tests := []struct {
+		name    string
+		setup   func(f *fields)
+		args    args
+		want    *feeds.Feed
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "happy",
+			args: args{stationSlug: "station"},
+			setup: func(f *fields) {
+				f.gp.EXPECT().GetStations().Return([]*models.Station{{Name: "station", Slug: "station", Tagline: "a cool station", Imageurl: "station.jpg"}}, nil)
+
+				f.gp.EXPECT().
+					GetShows("station").
+					Return([]*models.Show{
+						{Id: "show1", Name: "show1"},
+						{Id: "show2", Name: "show2"},
+					}, nil)
+
+				f.gp.EXPECT().GetEpisodes("station", "show1").
+					Return([]*models.Episode{{Id: "show1id1", Name: "show 1 episode 1", Description: "show 1 episode 1", StreamUrl: "s1ep1.mp3"}}, nil)
+
+				f.gp.EXPECT().GetEpisodes("station", "show2").
+					Return([]*models.Episode{{Id: "show2id1", Name: "show 2 episode 1", Description: "show 2 episode 1", StreamUrl: "s2ep1.mp3"}}, nil)
+
+			},
+			want: &feeds.Feed{
+				Title:       "station",
+				Description: "a cool station",
+				Image:       &feeds.Image{Url: "station.jpg"},
+				Items: []*feeds.Item{
+					{
+						Id:          "show1id1",
+						Title:       "show 1 episode 1: Monday 01 January 0001",
+						Description: "show 1 episode 1<br/><br/>Available until Monday 01 January 0001 00:00:00.",
+						Enclosure:   &feeds.Enclosure{Url: "s1ep1.mp3", Type: "audio/mpeg", Length: "1"},
+						Link:        &feeds.Link{Href: "s1ep1.mp3"},
+					},
+					{
+						Id:          "show2id1",
+						Title:       "show 2 episode 1: Monday 01 January 0001",
+						Description: "show 2 episode 1<br/><br/>Available until Monday 01 January 0001 00:00:00.",
+						Enclosure:   &feeds.Enclosure{Url: "s2ep1.mp3", Type: "audio/mpeg", Length: "1"},
+						Link:        &feeds.Link{Href: "s2ep1.mp3"},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "error getting episodes",
+			args: args{stationSlug: "station"},
+			setup: func(f *fields) {
+				f.gp.EXPECT().GetStations().Return([]*models.Station{{Name: "station", Slug: "station", Tagline: "a cool station", Imageurl: "station.jpg"}}, nil)
+
+				f.gp.EXPECT().
+					GetShows("station").
+					Return([]*models.Show{
+						{Id: "show1", Name: "show1"},
+						{Id: "show2", Name: "show2"},
+					}, nil)
+
+				f.gp.EXPECT().GetEpisodes("station", "show1").
+					Return(nil, errors.New("boom"))
+
+				f.gp.EXPECT().GetEpisodes("station", "show2").
+					Return([]*models.Episode{{Id: "show2id1", Name: "show 2 episode 1", Description: "show 2 episode 1", StreamUrl: "s2ep1.mp3"}}, nil).Maybe()
+
+			},
+			want:    nil,
+			wantErr: assert.Error,
+		},
+		{
+			name: "error getting shows",
+			args: args{stationSlug: "station"},
+			setup: func(f *fields) {
+				f.gp.EXPECT().GetStations().Return([]*models.Station{{Name: "station", Slug: "station", Tagline: "a cool station", Imageurl: "station.jpg"}}, nil)
+
+				f.gp.EXPECT().
+					GetShows("station").
+					Return(nil, errors.New("boom"))
+
+			},
+			want:    nil,
+			wantErr: assert.Error,
+		},
+		{
+			name: "error getting station",
+			args: args{stationSlug: "station"},
+			setup: func(f *fields) {
+				f.gp.EXPECT().GetStations().Return(nil, errors.New("boom"))
+			},
+			want:    nil,
+			wantErr: assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		f := &fields{
+			gp: gpMocks.NewMockGlobalPlayer(t),
+		}
+		if tt.setup != nil {
+			tt.setup(f)
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			u := globalplayer.NewUseCase(f.gp)
+			got, err := u.GetAllShowsFeed(ctx, tt.args.stationSlug)
+			tt.wantErr(t, err)
+			if tt.want != nil {
+
+				slices.SortFunc(got.Items, func(a, b *feeds.Item) int { return strings.Compare(a.Id, b.Id) })
+				assert.Equal(t, tt.want, got)
+			}
 		})
 	}
 }

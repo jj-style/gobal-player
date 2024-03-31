@@ -26,6 +26,12 @@ gobal-player-tui
 ## gobal-player-server
 RESTful server with friendly APIs to global player, and more features coming soon!
 
+### Features
+- RESTful APIs for exploring stations, shows and episodes
+- RSS feeds:
+  - RSS feed for all shows in a station
+  - RSS feed for all episodes for a given show
+
 ### Docker
 
 Run with docker: `docker run --rm -it -p 8080:8080 ghcr.io/jj-style/gobal-player/gobal-player-server:v0.1.11`

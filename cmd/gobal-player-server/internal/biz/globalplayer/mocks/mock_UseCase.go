@@ -5,6 +5,8 @@ package mocks
 import (
 	context "context"
 
+	feeds "github.com/gorilla/feeds"
+
 	mock "github.com/stretchr/testify/mock"
 
 	models "github.com/jj-style/gobal-player/pkg/globalplayer/models"
@@ -21,6 +23,65 @@ type MockUseCase_Expecter struct {
 
 func (_m *MockUseCase) EXPECT() *MockUseCase_Expecter {
 	return &MockUseCase_Expecter{mock: &_m.Mock}
+}
+
+// GetAllShowsFeed provides a mock function with given fields: _a0, _a1
+func (_m *MockUseCase) GetAllShowsFeed(_a0 context.Context, _a1 string) (*feeds.Feed, error) {
+	ret := _m.Called(_a0, _a1)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllShowsFeed")
+	}
+
+	var r0 *feeds.Feed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*feeds.Feed, error)); ok {
+		return rf(_a0, _a1)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *feeds.Feed); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*feeds.Feed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(_a0, _a1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockUseCase_GetAllShowsFeed_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAllShowsFeed'
+type MockUseCase_GetAllShowsFeed_Call struct {
+	*mock.Call
+}
+
+// GetAllShowsFeed is a helper method to define mock.On call
+//   - _a0 context.Context
+//   - _a1 string
+func (_e *MockUseCase_Expecter) GetAllShowsFeed(_a0 interface{}, _a1 interface{}) *MockUseCase_GetAllShowsFeed_Call {
+	return &MockUseCase_GetAllShowsFeed_Call{Call: _e.mock.On("GetAllShowsFeed", _a0, _a1)}
+}
+
+func (_c *MockUseCase_GetAllShowsFeed_Call) Run(run func(_a0 context.Context, _a1 string)) *MockUseCase_GetAllShowsFeed_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockUseCase_GetAllShowsFeed_Call) Return(_a0 *feeds.Feed, _a1 error) *MockUseCase_GetAllShowsFeed_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockUseCase_GetAllShowsFeed_Call) RunAndReturn(run func(context.Context, string) (*feeds.Feed, error)) *MockUseCase_GetAllShowsFeed_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // GetEpisodes provides a mock function with given fields: _a0, _a1, _a2
@@ -83,6 +144,126 @@ func (_c *MockUseCase_GetEpisodes_Call) RunAndReturn(run func(context.Context, s
 	return _c
 }
 
+// GetEpisodesFeed provides a mock function with given fields: _a0, _a1, _a2
+func (_m *MockUseCase) GetEpisodesFeed(_a0 context.Context, _a1 string, _a2 string) (*feeds.Feed, error) {
+	ret := _m.Called(_a0, _a1, _a2)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetEpisodesFeed")
+	}
+
+	var r0 *feeds.Feed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*feeds.Feed, error)); ok {
+		return rf(_a0, _a1, _a2)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *feeds.Feed); ok {
+		r0 = rf(_a0, _a1, _a2)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*feeds.Feed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(_a0, _a1, _a2)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockUseCase_GetEpisodesFeed_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetEpisodesFeed'
+type MockUseCase_GetEpisodesFeed_Call struct {
+	*mock.Call
+}
+
+// GetEpisodesFeed is a helper method to define mock.On call
+//   - _a0 context.Context
+//   - _a1 string
+//   - _a2 string
+func (_e *MockUseCase_Expecter) GetEpisodesFeed(_a0 interface{}, _a1 interface{}, _a2 interface{}) *MockUseCase_GetEpisodesFeed_Call {
+	return &MockUseCase_GetEpisodesFeed_Call{Call: _e.mock.On("GetEpisodesFeed", _a0, _a1, _a2)}
+}
+
+func (_c *MockUseCase_GetEpisodesFeed_Call) Run(run func(_a0 context.Context, _a1 string, _a2 string)) *MockUseCase_GetEpisodesFeed_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *MockUseCase_GetEpisodesFeed_Call) Return(_a0 *feeds.Feed, _a1 error) *MockUseCase_GetEpisodesFeed_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockUseCase_GetEpisodesFeed_Call) RunAndReturn(run func(context.Context, string, string) (*feeds.Feed, error)) *MockUseCase_GetEpisodesFeed_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetShow provides a mock function with given fields: _a0, _a1, _a2
+func (_m *MockUseCase) GetShow(_a0 context.Context, _a1 string, _a2 string) (*models.Show, error) {
+	ret := _m.Called(_a0, _a1, _a2)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetShow")
+	}
+
+	var r0 *models.Show
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*models.Show, error)); ok {
+		return rf(_a0, _a1, _a2)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *models.Show); ok {
+		r0 = rf(_a0, _a1, _a2)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Show)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(_a0, _a1, _a2)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockUseCase_GetShow_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetShow'
+type MockUseCase_GetShow_Call struct {
+	*mock.Call
+}
+
+// GetShow is a helper method to define mock.On call
+//   - _a0 context.Context
+//   - _a1 string
+//   - _a2 string
+func (_e *MockUseCase_Expecter) GetShow(_a0 interface{}, _a1 interface{}, _a2 interface{}) *MockUseCase_GetShow_Call {
+	return &MockUseCase_GetShow_Call{Call: _e.mock.On("GetShow", _a0, _a1, _a2)}
+}
+
+func (_c *MockUseCase_GetShow_Call) Run(run func(_a0 context.Context, _a1 string, _a2 string)) *MockUseCase_GetShow_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *MockUseCase_GetShow_Call) Return(_a0 *models.Show, _a1 error) *MockUseCase_GetShow_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockUseCase_GetShow_Call) RunAndReturn(run func(context.Context, string, string) (*models.Show, error)) *MockUseCase_GetShow_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetShows provides a mock function with given fields: _a0, _a1
 func (_m *MockUseCase) GetShows(_a0 context.Context, _a1 string) ([]*models.Show, error) {
 	ret := _m.Called(_a0, _a1)
@@ -138,6 +319,65 @@ func (_c *MockUseCase_GetShows_Call) Return(_a0 []*models.Show, _a1 error) *Mock
 }
 
 func (_c *MockUseCase_GetShows_Call) RunAndReturn(run func(context.Context, string) ([]*models.Show, error)) *MockUseCase_GetShows_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetStation provides a mock function with given fields: _a0, _a1
+func (_m *MockUseCase) GetStation(_a0 context.Context, _a1 string) (*models.Station, error) {
+	ret := _m.Called(_a0, _a1)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetStation")
+	}
+
+	var r0 *models.Station
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*models.Station, error)); ok {
+		return rf(_a0, _a1)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *models.Station); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Station)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(_a0, _a1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockUseCase_GetStation_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetStation'
+type MockUseCase_GetStation_Call struct {
+	*mock.Call
+}
+
+// GetStation is a helper method to define mock.On call
+//   - _a0 context.Context
+//   - _a1 string
+func (_e *MockUseCase_Expecter) GetStation(_a0 interface{}, _a1 interface{}) *MockUseCase_GetStation_Call {
+	return &MockUseCase_GetStation_Call{Call: _e.mock.On("GetStation", _a0, _a1)}
+}
+
+func (_c *MockUseCase_GetStation_Call) Run(run func(_a0 context.Context, _a1 string)) *MockUseCase_GetStation_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockUseCase_GetStation_Call) Return(_a0 *models.Station, _a1 error) *MockUseCase_GetStation_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockUseCase_GetStation_Call) RunAndReturn(run func(context.Context, string) (*models.Station, error)) *MockUseCase_GetStation_Call {
 	_c.Call.Return(run)
 	return _c
 }
