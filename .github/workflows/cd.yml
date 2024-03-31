@@ -1,5 +1,6 @@
 name: release
 on:
+  workflow_dispatch:
   push:
     tags:
       - v*
@@ -17,12 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+
       - name: Generate Changelog
         run: |
           curl -sSfL https://github.com/convco/convco/releases/latest/download/convco-ubuntu.zip | zcat > convco
           chmod +x convco
           ./convco changelog v$(./convco version) -m 1 > ${{ github.workspace }}-CHANGELOG.txt
-          cat ${{ github.workspace }}-CHANGELOG.txt
           rm convco
       - name: Release
         uses: softprops/action-gh-release@v2
