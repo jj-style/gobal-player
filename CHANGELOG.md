@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.1.13](https://github.com/jj-style/gobal-player/compare/v0.1.12...HEAD) (2024-03-31)
+
+### Fixes
+
+* **ci:** convco changelog for released version
+([41acff8](https://github.com/jj-style/gobal-player/commit/41acff8c46c254811ece31ea4dfb219dffafade3)),
+closes [#19](https://github.com/jj-style/gobal-player/issues/19)
+
 ### [v0.1.12](https://github.com/jj-style/gobal-player/compare/v0.1.11...v0.1.12) (2024-03-31)
 
 #### Features
