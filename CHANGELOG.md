@@ -1,8 +1,15 @@
 # Changelog
 
-## [v0.1.13](https://github.com/jj-style/gobal-player/compare/v0.1.12...HEAD) (2024-03-31)
+## [v0.1.14](https://github.com/jj-style/gobal-player/compare/v0.1.13...HEAD) (2024-03-31)
 
 ### Fixes
+
+* **ci:** convco version missing "v" prefix
+([a4a3f42](https://github.com/jj-style/gobal-player/commit/a4a3f42a24e8e6586949460f86f27ff2c8357174))
+
+### [v0.1.13](https://github.com/jj-style/gobal-player/compare/v0.1.12...v0.1.13) (2024-03-31)
+
+#### Fixes
 
 * **ci:** convco changelog for released version
 ([41acff8](https://github.com/jj-style/gobal-player/commit/41acff8c46c254811ece31ea4dfb219dffafade3)),
