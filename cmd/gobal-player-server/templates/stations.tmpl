@@ -1,0 +1,28 @@
+{{- template "base.tmpl" }}
+<div class="container-fluid">
+
+<h1>Stations</h1>
+
+{{ template "nav.tmpl" $ }}
+
+<div class="row mx-1 justify-content-center">
+  {{- range .data }}
+  <div class="card col-sm-6 col-md-4 col-lg-3 m-1 p-2">
+  <div class="row g-0 align-items-center">
+    <div class="col-md-4">
+      <img src="{{.ImageUrl}}" class="img-fluid rounded-start" style="max-width: 100px">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{.Name}}</h5>
+        <p class="card-text">{{.Tagline}}</p>
+        <a href="/shows/{{.Slug}}" class="btn btn-outline-primary btn-sm">View shows</a>
+      </div>
+    </div>
+  </div>
+  </div>
+  {{- end }}
+</div>
+
+</div>
+{{- template "footer.tmpl" -}}

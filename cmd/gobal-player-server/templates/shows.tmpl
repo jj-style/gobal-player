@@ -1,0 +1,48 @@
+{{- template "base.tmpl" }}
+<div class="container-fluid">
+
+<h1>{{ .station.Name }} Shows</h1>
+
+{{ template "nav.tmpl" $ }}
+
+<div class="row">
+  <a class="icon-link" href="/api{{.ctx.Request.RequestURI}}/rss">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rss-fill" viewBox="0 0 16 16">
+      <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2m0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2m.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+  </svg>
+  RSS Feed: {{ .station.Name }} All Shows
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <audio controls style="max-width:500px">
+    <source src="{{ .station.StreamUrl }}" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+</div>
+
+<div class="row mx-1 justify-content-center">
+  {{- range .data }}
+  <div class="card col-sm-6 col-md-4 col-lg-3 m-1 p-2">
+  <div class="row g-0 align-items-center">
+    <div class="col-md-4">
+      <img src="{{.ImageUrl}}" class="img-fluid rounded-start" style="max-width: 100px">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{.Name}}</h5>
+        <a href="/episodes/{{$.station.Slug}}/{{.Id}}" class="btn btn-outline-primary btn-sm">View episodes</a>
+        <a class="icon-link" href="/api/episodes/{{$.station.Slug}}/{{.Id}}/rss">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rss-fill" viewBox="0 0 16 16">
+            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2m0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2m.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+        </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  </div>
+  {{- end }}
+</div>
+
+</div>
+{{- template "footer.tmpl" -}}

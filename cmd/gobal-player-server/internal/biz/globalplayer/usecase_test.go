@@ -429,7 +429,7 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 			name: "happy",
 			args: args{stationSlug: "station"},
 			setup: func(f *fields) {
-				f.gp.EXPECT().GetStations().Return([]*models.Station{{Name: "station", Slug: "station", Tagline: "a cool station", Imageurl: "station.jpg"}}, nil)
+				f.gp.EXPECT().GetStations().Return([]*models.Station{{Name: "station", Slug: "station", Tagline: "a cool station", ImageUrl: "station.jpg"}}, nil)
 
 				f.gp.EXPECT().
 					GetShows("station").
@@ -472,7 +472,7 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 			name: "error getting episodes",
 			args: args{stationSlug: "station"},
 			setup: func(f *fields) {
-				f.gp.EXPECT().GetStations().Return([]*models.Station{{Name: "station", Slug: "station", Tagline: "a cool station", Imageurl: "station.jpg"}}, nil)
+				f.gp.EXPECT().GetStations().Return([]*models.Station{{Name: "station", Slug: "station", Tagline: "a cool station", ImageUrl: "station.jpg"}}, nil)
 
 				f.gp.EXPECT().
 					GetShows("station").
@@ -495,7 +495,7 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 			name: "error getting shows",
 			args: args{stationSlug: "station"},
 			setup: func(f *fields) {
-				f.gp.EXPECT().GetStations().Return([]*models.Station{{Name: "station", Slug: "station", Tagline: "a cool station", Imageurl: "station.jpg"}}, nil)
+				f.gp.EXPECT().GetStations().Return([]*models.Station{{Name: "station", Slug: "station", Tagline: "a cool station", ImageUrl: "station.jpg"}}, nil)
 
 				f.gp.EXPECT().
 					GetShows("station").

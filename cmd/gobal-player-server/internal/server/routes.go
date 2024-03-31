@@ -6,9 +6,14 @@ import (
 )
 
 func addRoutes(r *gin.Engine, service *service.Service) {
-	r.GET("/stations", service.GetStations)
-	r.GET("/shows/:slug", service.GetShows)
-	r.GET("/episodes/:slug/:id", service.GetEpisodes)
-	r.GET("/shows/:slug/rss", service.GetAllShowsRss)
-	r.GET("/episodes/:slug/:id/rss", service.GetEpisodesRss)
+	api := r.Group("/api")
+	api.GET("/stations", service.GetStations)
+	api.GET("/shows/:slug", service.GetShows)
+	api.GET("/episodes/:slug/:id", service.GetEpisodes)
+	api.GET("/shows/:slug/rss", service.GetAllShowsRss)
+	api.GET("/episodes/:slug/:id/rss", service.GetEpisodesRss)
+
+	r.GET("/stations", loadTemplates(r), service.StationsUI)
+	r.GET("/shows/:slug", loadTemplates(r), service.ShowsUI)
+	r.GET("/episodes/:slug/:id", loadTemplates(r), service.EpisodesUI)
 }

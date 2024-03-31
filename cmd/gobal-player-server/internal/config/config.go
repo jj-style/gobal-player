@@ -21,7 +21,7 @@ func NewConfig(dir string) (*Config, error) {
 	// setup some defaults
 	viper.SetDefault("host", "0.0.0.0")
 	viper.SetDefault("port", "8080")
-	viper.SetDefault("cache.ttl", "60s")
+	viper.SetDefault("cache.ttl", "3s")
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

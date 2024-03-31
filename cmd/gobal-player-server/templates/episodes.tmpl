@@ -1,0 +1,40 @@
+{{- template "base.tmpl" }}
+<div class="container-fluid">
+
+<h1>{{ .show.Name }} Episodes</h1>
+
+{{ template "nav.tmpl" $ }}
+
+<a class="icon-link" href="/api{{.ctx.Request.RequestURI}}/rss">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rss-fill" viewBox="0 0 16 16">
+    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2m0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2m.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+  </svg>
+  RSS Feed: {{ .show.Name }}
+</a>
+
+<div class="row mx-1 justify-content-center">
+  {{- range .data }}
+  <div class="card col-sm-6 col-md-4 col-lg-3 m-1 p-2">
+  <div class="card-body">
+    <h5 class="card-title">{{.Name}}</h5>
+    <p class="card-text">{{.Description}}</p>
+    <audio controls>
+      <source src="{{.StreamUrl}}" type="audio/mpeg" />
+    </audio>
+    <a class="icon-link" href="{{.StreamUrl}}" download="{{.StreamUrl}}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+      </svg>
+    </a>
+
+  </div>
+  <div class="card-footer text-body-secondary">
+    Available until {{.Until.Format "Monday, 02 January 15:04:05"}}.<br/>
+  </div>
+  </div>
+  {{- end }}
+</div>
+
+</div>
+{{- template "footer.tmpl" -}}

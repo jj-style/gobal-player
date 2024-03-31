@@ -1,0 +1,9 @@
+{{ define "nav.tmpl" }}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+  {{ range .breadcrumbs }}
+    <li class="breadcrumb-item {{with .Active}}active{{end}}" {{with .Active}}aria-current="page"{{end}}><a href="{{.Url}}">{{.Name}}</a></li>
+  {{ end }}
+  </ol>
+</nav>
+{{ end }}

@@ -63,7 +63,7 @@ func Test_service_GetStations(t *testing.T) {
 			router := givenService(f.uc)
 
 			w := httptest.NewRecorder()
-			request, err := http.NewRequest(http.MethodGet, "/stations", nil)
+			request, err := http.NewRequest(http.MethodGet, "/api/stations", nil)
 			assert.NoError(t, err)
 
 			router.ServeHTTP(w, request)
@@ -129,7 +129,7 @@ func Test_service_GetShows(t *testing.T) {
 			router := givenService(f.uc)
 
 			w := httptest.NewRecorder()
-			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/shows/%s", tt.args.slug), nil)
+			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/shows/%s", tt.args.slug), nil)
 			assert.NoError(t, err)
 
 			router.ServeHTTP(w, request)
@@ -196,7 +196,7 @@ func Test_service_GetEpisodes(t *testing.T) {
 			router := givenService(f.uc)
 
 			w := httptest.NewRecorder()
-			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/episodes/%s/%s", tt.args.slug, tt.args.id), nil)
+			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/episodes/%s/%s", tt.args.slug, tt.args.id), nil)
 			assert.NoError(t, err)
 
 			router.ServeHTTP(w, request)
@@ -259,7 +259,7 @@ func Test_service_GetEpisodesRss(t *testing.T) {
 			router := givenService(f.uc)
 
 			w := httptest.NewRecorder()
-			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/episodes/%s/%s/rss", tt.args.slug, tt.args.id), nil)
+			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/episodes/%s/%s/rss", tt.args.slug, tt.args.id), nil)
 			assert.NoError(t, err)
 
 			router.ServeHTTP(w, request)
@@ -317,7 +317,7 @@ func Test_service_GetAllShowsRss(t *testing.T) {
 			router := givenService(f.uc)
 
 			w := httptest.NewRecorder()
-			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/shows/%s/rss", tt.args.slug), nil)
+			request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/shows/%s/rss", tt.args.slug), nil)
 			assert.NoError(t, err)
 
 			router.ServeHTTP(w, request)

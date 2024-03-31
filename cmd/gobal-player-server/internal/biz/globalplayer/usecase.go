@@ -128,7 +128,7 @@ func (u *useCase) GetAllShowsFeed(ctx context.Context, stationsSlug string) (*fe
 		return nil, err
 	}
 
-	return feeds2.ToFeed(&models.Show{Name: st.Name, ImageUrl: st.Imageurl}, episodes, st.Tagline), nil
+	return feeds2.ToFeed(&models.Show{Name: st.Name, ImageUrl: st.ImageUrl}, episodes, st.Tagline), nil
 }
 
 func NewUseCase(gp globalplayer.GlobalPlayer) UseCase {

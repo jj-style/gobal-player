@@ -8,7 +8,7 @@ type Station struct {
 	StreamUrl string `json:"streamUrl"`
 	Id        string `json:"id"`
 	Tagline   string `json:"tagline"`
-	Imageurl  string `json:"imageUrl"`
+	ImageUrl  string `json:"imageUrl"`
 }
 
 func StationFromApiModel(s *nextjs.StationBrand) *Station {
@@ -18,6 +18,6 @@ func StationFromApiModel(s *nextjs.StationBrand) *Station {
 		StreamUrl: s.NationalStation.StreamURL,
 		Id:        s.ID,
 		Tagline:   s.NationalStation.Tagline,
-		Imageurl:  s.LogoUnstackedWithoutBackground,
+		ImageUrl:  s.LogoUnstackedWithoutBackground,
 	}
 }
