@@ -14,4 +14,6 @@ FROM gcr.io/distroless/static
 
 COPY --from=builder /build/gobal-player-server .
 
+COPY --from=builder /build/cmd/gobal-player-server/templates/ templates/
+
 ENTRYPOINT [ "./gobal-player-server" ]
