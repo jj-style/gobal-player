@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	Host  string      `mapstructure:"host"`
-	Port  int         `mapstructure:"port"`
-	Cache CacheConfig `mapstructure:"cache"`
+	Host         string      `mapstructure:"host"`
+	Port         int         `mapstructure:"port"`
+	Cache        CacheConfig `mapstructure:"cache"`
+	CronSchedule string      `mapstructure:"cronSchedule"`
 }
 
 type CacheConfig struct {
@@ -22,6 +23,7 @@ func NewConfig(dir string) (*Config, error) {
 	viper.SetDefault("host", "0.0.0.0")
 	viper.SetDefault("port", "8080")
 	viper.SetDefault("cache.ttl", "3s")
+	viper.SetDefault("cronSchedule", "@every 1m")
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

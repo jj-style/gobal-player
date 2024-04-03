@@ -8,6 +8,7 @@ import (
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models/nextjs"
 	"github.com/jj-style/gobal-player/pkg/resty"
+	"github.com/robfig/cron/v3"
 	"github.com/samber/lo"
 )
 
@@ -24,18 +25,48 @@ type GlobalPlayer interface {
 }
 
 type gpClient struct {
-	rc resty.Client
+	rc   resty.Client
+	cron *cron.Cron
 }
 
-func NewClient(hc *http.Client, apiKey string, cache resty.Cache[[]byte]) GlobalPlayer {
-	baseUrlWithApiKey, _ := url.JoinPath(baseUrl, apiKey)
-	restClient := resty.NewClient(
-		resty.WithBaseUrl(baseUrlWithApiKey),
-		resty.WithHttpClient(hc),
-		resty.WithCache(cache),
-	)
-	c := &gpClient{rc: restClient}
-	return c
+func NewClient(hc *http.Client, cache resty.Cache[[]byte], updateDuration string) (GlobalPlayer, func(), error) {
+
+	newRestClient := func() (resty.Client, error) {
+		buildId, err := GetBuildId(hc)
+		if err != nil {
+			return nil, err
+		}
+		baseUrlWithApiKey, _ := url.JoinPath(baseUrl, buildId)
+		rc := resty.NewClient(
+			resty.WithBaseUrl(baseUrlWithApiKey),
+			resty.WithHttpClient(hc),
+			resty.WithCache(cache),
+		)
+		return rc, nil
+	}
+
+	rc, err := newRestClient()
+	if err != nil {
+		return nil, func() {}, err
+	}
+
+	cron := cron.New()
+	client := &gpClient{rc: rc, cron: cron}
+
+	if updateDuration != "" {
+		_, err = cron.AddFunc("@every 1m", func() {
+			if rc, err = newRestClient(); err != nil {
+				client.rc = rc
+			}
+		})
+		if err != nil {
+			return nil, func() {}, err
+		}
+	}
+
+	cron.Start()
+
+	return client, func() { cron.Stop() }, nil
 }
 
 func (c *gpClient) GetStations() ([]*models.Station, error) {

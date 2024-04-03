@@ -35,14 +35,19 @@ func main() {
 	// don't expire cache in the TUI
 	cache := resty.NewCache[[]byte](0)
 
-	gp := globalplayer.NewClient(httpClient, viper.GetString("buildId"), cache)
-
-	player, cleanup, err := audioplayer.NewPlayer()
+	gp, cleanup2, err := globalplayer.NewClient(httpClient, cache, "@every 1h")
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	defer cleanup()
+	defer cleanup2()
+
+	player, cleanup3, err := audioplayer.NewPlayer()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	defer cleanup3()
 
 	app := NewApp(gp, player, httpClient, cache)
 	if err := app.Run(); err != nil {
@@ -66,15 +71,6 @@ func initLogger() func() {
 }
 
 // creates a new *http.Client based on the config.
-// Checks whether it has a valid token or generates a new one if not.
 func newHttpClient() (*http.Client, error) {
-	client := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: viper.GetBool("insecure")}}}
-	if ok := globalplayer.CheckBuildId(client, viper.GetString("buildId")); !ok {
-		newBuildId, err := globalplayer.GetBuildId(client)
-		if err != nil {
-			return nil, err
-		}
-		viper.Set("buildId", newBuildId)
-	}
-	return client, nil
+	return &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: viper.GetBool("insecure")}}}, nil
 }

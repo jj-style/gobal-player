@@ -11,6 +11,6 @@ import (
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/service"
 )
 
-func InitializeServer(config *config.Config) (*server.Server, error) {
+func InitializeServer(config *config.Config) (*server.Server, func(), error) {
 	panic(wire.Build(server.GlobalPlayerProvider, service.NewService, biz.ProviderSet, server.NewServer))
 }

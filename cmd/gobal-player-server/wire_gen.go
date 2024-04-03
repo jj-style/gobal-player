@@ -15,14 +15,16 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeServer(config2 *config.Config) (*server.Server, error) {
+func InitializeServer(config2 *config.Config) (*server.Server, func(), error) {
 	cache := server.NewCache(config2)
-	globalPlayer, err := server.NewGlobalPlayer(config2, cache)
+	globalPlayer, cleanup, err := server.NewGlobalPlayer(config2, cache)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	useCase := globalplayer.NewUseCase(globalPlayer)
 	serviceService := service.NewService(useCase)
 	serverServer := server.NewServer(serviceService)
-	return serverServer, nil
+	return serverServer, func() {
+		cleanup()
+	}, nil
 }

@@ -12,6 +12,7 @@ require (
 	github.com/gorilla/feeds v1.1.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rivo/tview v0.0.0-20240225120200-5605142ca62e
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/samber/lo v1.39.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.18.2

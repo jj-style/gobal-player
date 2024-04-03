@@ -27,10 +27,11 @@ func run(ctx context.Context, config *config.Config) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
-	server, err := InitializeServer(config)
+	server, cleanup, err := InitializeServer(config)
 	if err != nil {
 		return err
 	}
+	defer cleanup()
 
 	go func() {
 		addr := fmt.Sprintf("%s:%d", config.Host, config.Port)

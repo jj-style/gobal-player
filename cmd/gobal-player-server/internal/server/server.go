@@ -37,10 +37,6 @@ func NewCache(config *config.Config) resty.Cache[[]byte] {
 	return resty.NewCache[[]byte](config.Cache.Ttl)
 }
 
-func NewGlobalPlayer(config *config.Config, cache resty.Cache[[]byte]) (globalplayer.GlobalPlayer, error) {
-	buildId, err := globalplayer.GetBuildId(http.DefaultClient)
-	if err != nil {
-		return nil, err
-	}
-	return globalplayer.NewClient(http.DefaultClient, buildId, cache), nil
+func NewGlobalPlayer(config *config.Config, cache resty.Cache[[]byte]) (globalplayer.GlobalPlayer, func(), error) {
+	return globalplayer.NewClient(http.DefaultClient, cache, config.CronSchedule)
 }
