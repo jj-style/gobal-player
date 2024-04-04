@@ -55,7 +55,7 @@ func NewClient(hc *http.Client, cache resty.Cache[[]byte], updateDuration string
 
 	if updateDuration != "" {
 		_, err = cron.AddFunc("@every 1m", func() {
-			if rc, err = newRestClient(); err != nil {
+			if rc, err = newRestClient(); err == nil {
 				client.rc = rc
 			}
 		})

@@ -92,7 +92,7 @@ func (c *client) do(req *http.Request) ([]byte, error) {
 	_ = c.cache.Set(context.TODO(), key, out)
 
 	if resp.StatusCode > 300 {
-		log.WithFields(log.Fields{"code": resp.StatusCode, "content": string(out)}).Error("bad status code")
+		log.WithFields(log.Fields{"code": resp.StatusCode, "url": req.URL}).Error("bad status code")
 	}
 	return out, nil
 }
