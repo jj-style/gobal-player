@@ -21,7 +21,8 @@ func InitializeServer(config2 *config.Config) (*server.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	useCase := globalplayer.NewUseCase(globalPlayer)
+	httpClient := globalplayer.NewHttpClient()
+	useCase := globalplayer.NewUseCase(globalPlayer, httpClient)
 	serviceService := service.NewService(useCase)
 	serverServer := server.NewServer(serviceService)
 	return serverServer, func() {

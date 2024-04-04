@@ -5,4 +5,4 @@ import (
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer"
 )
 
-var ProviderSet = wire.NewSet(globalplayer.NewUseCase)
+var ProviderSet = wire.NewSet(globalplayer.ProviderSet)

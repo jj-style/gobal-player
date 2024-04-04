@@ -3,12 +3,15 @@ package globalplayer
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sync/atomic"
 
+	"github.com/google/wire"
 	"github.com/gorilla/feeds"
 	"github.com/jj-style/gobal-player/pkg/globalplayer"
 	feeds2 "github.com/jj-style/gobal-player/pkg/globalplayer/feeds"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
+	"github.com/jj-style/gobal-player/pkg/resty"
 	"github.com/samber/lo"
 	"golang.org/x/sync/errgroup"
 )
@@ -25,6 +28,7 @@ type UseCase interface {
 
 type useCase struct {
 	gp globalplayer.GlobalPlayer
+	hc resty.HttpClient
 }
 
 func (u *useCase) GetStations(ctx context.Context) ([]*models.Station, error) {
@@ -76,7 +80,7 @@ func (u *useCase) GetEpisodesFeed(ctx context.Context, stationsSlug, showId stri
 		return nil, err
 	}
 
-	return feeds2.ToFeed(show, eps, eps[0].Description), nil
+	return feeds2.ToFeed(u.hc, show, eps, eps[0].Description)
 }
 
 func (u *useCase) GetAllShowsFeed(ctx context.Context, stationsSlug string) (*feeds.Feed, error) {
@@ -128,11 +132,18 @@ func (u *useCase) GetAllShowsFeed(ctx context.Context, stationsSlug string) (*fe
 		return nil, err
 	}
 
-	return feeds2.ToFeed(&models.Show{Name: st.Name, ImageUrl: st.ImageUrl}, episodes, st.Tagline), nil
+	return feeds2.ToFeed(u.hc, &models.Show{Name: st.Name, ImageUrl: st.ImageUrl}, episodes, st.Tagline)
 }
 
-func NewUseCase(gp globalplayer.GlobalPlayer) UseCase {
+func NewUseCase(gp globalplayer.GlobalPlayer, hc resty.HttpClient) UseCase {
 	return &useCase{
 		gp: gp,
+		hc: hc,
 	}
 }
+
+func NewHttpClient() resty.HttpClient {
+	return http.DefaultClient
+}
+
+var ProviderSet = wire.NewSet(NewUseCase, NewHttpClient)

@@ -3,6 +3,7 @@ package globalplayer_test
 import (
 	"context"
 	"errors"
+	"net/http"
 	"slices"
 	"strings"
 	"testing"
@@ -11,6 +12,7 @@ import (
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer"
 	gpMocks "github.com/jj-style/gobal-player/pkg/globalplayer/mocks"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
+	restyMocks "github.com/jj-style/gobal-player/pkg/resty/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,6 +20,7 @@ func Test_useCase_GetStations(t *testing.T) {
 	var ctx = context.Background()
 	type fields struct {
 		gp *gpMocks.MockGlobalPlayer
+		hc *restyMocks.MockHttpClient
 	}
 	type args struct {
 	}
@@ -57,13 +60,14 @@ func Test_useCase_GetStations(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f := fields{
 				gp: gpMocks.NewMockGlobalPlayer(t),
+				hc: restyMocks.NewMockHttpClient(t),
 			}
 
 			if tt.setup != nil {
 				tt.setup(f, tt.args)
 			}
 
-			u := globalplayer.NewUseCase(f.gp)
+			u := globalplayer.NewUseCase(f.gp, f.hc)
 			got, err := u.GetStations(ctx)
 
 			tt.wantErr(t, err)
@@ -76,6 +80,7 @@ func Test_useCase_GetShows(t *testing.T) {
 	var ctx = context.Background()
 	type fields struct {
 		gp *gpMocks.MockGlobalPlayer
+		hc *restyMocks.MockHttpClient
 	}
 	type args struct {
 		slug string
@@ -118,13 +123,14 @@ func Test_useCase_GetShows(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f := fields{
 				gp: gpMocks.NewMockGlobalPlayer(t),
+				hc: restyMocks.NewMockHttpClient(t),
 			}
 
 			if tt.setup != nil {
 				tt.setup(f, tt.args)
 			}
 
-			u := globalplayer.NewUseCase(f.gp)
+			u := globalplayer.NewUseCase(f.gp, f.hc)
 			got, err := u.GetShows(ctx, tt.args.slug)
 
 			tt.wantErr(t, err)
@@ -137,6 +143,7 @@ func Test_useCase_GetEpisodes(t *testing.T) {
 	var ctx = context.Background()
 	type fields struct {
 		gp *gpMocks.MockGlobalPlayer
+		hc *restyMocks.MockHttpClient
 	}
 	type args struct {
 		slug string
@@ -180,13 +187,14 @@ func Test_useCase_GetEpisodes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f := fields{
 				gp: gpMocks.NewMockGlobalPlayer(t),
+				hc: restyMocks.NewMockHttpClient(t),
 			}
 
 			if tt.setup != nil {
 				tt.setup(f, tt.args)
 			}
 
-			u := globalplayer.NewUseCase(f.gp)
+			u := globalplayer.NewUseCase(f.gp, f.hc)
 			got, err := u.GetEpisodes(ctx, tt.args.slug, tt.args.id)
 
 			tt.wantErr(t, err)
@@ -199,6 +207,7 @@ func Test_useCase_GetStation(t *testing.T) {
 	var ctx = context.Background()
 	type fields struct {
 		gp *gpMocks.MockGlobalPlayer
+		hc *restyMocks.MockHttpClient
 	}
 	type args struct {
 		stationSlug string
@@ -247,12 +256,13 @@ func Test_useCase_GetStation(t *testing.T) {
 	for _, tt := range tests {
 		f := &fields{
 			gp: gpMocks.NewMockGlobalPlayer(t),
+			hc: restyMocks.NewMockHttpClient(t),
 		}
 		if tt.setup != nil {
 			tt.setup(f)
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			u := globalplayer.NewUseCase(f.gp)
+			u := globalplayer.NewUseCase(f.gp, f.hc)
 			got, err := u.GetStation(ctx, tt.args.stationSlug)
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
@@ -264,6 +274,7 @@ func Test_useCase_GetShow(t *testing.T) {
 	var ctx = context.Background()
 	type fields struct {
 		gp *gpMocks.MockGlobalPlayer
+		hc *restyMocks.MockHttpClient
 	}
 	type args struct {
 		stationSlug string
@@ -313,12 +324,13 @@ func Test_useCase_GetShow(t *testing.T) {
 	for _, tt := range tests {
 		f := &fields{
 			gp: gpMocks.NewMockGlobalPlayer(t),
+			hc: restyMocks.NewMockHttpClient(t),
 		}
 		if tt.setup != nil {
 			tt.setup(f)
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			u := globalplayer.NewUseCase(f.gp)
+			u := globalplayer.NewUseCase(f.gp, f.hc)
 			got, err := u.GetShow(ctx, tt.args.stationSlug, tt.args.showId)
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
@@ -330,6 +342,7 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 	var ctx = context.Background()
 	type fields struct {
 		gp *gpMocks.MockGlobalPlayer
+		hc *restyMocks.MockHttpClient
 	}
 	type args struct {
 		stationSlug string
@@ -352,6 +365,9 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 				f.gp.EXPECT().
 					GetShows("station").
 					Return([]*models.Show{{Id: "show", Name: "show", ImageUrl: "show.jpg"}}, nil)
+
+				expectReq, _ := http.NewRequest(http.MethodHead, "episode.mp3", nil)
+				f.hc.EXPECT().Do(expectReq).Return(&http.Response{ContentLength: 100}, nil)
 			},
 			want: &feeds.Feed{
 				Title:       "show",
@@ -362,7 +378,7 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 						Id:          "id",
 						Title:       "episode 1: Monday 01 January 0001",
 						Description: "episode<br/><br/>Available until Monday 01 January 0001 00:00:00.",
-						Enclosure:   &feeds.Enclosure{Url: "episode.mp3", Type: "audio/mpeg", Length: "1"},
+						Enclosure:   &feeds.Enclosure{Url: "episode.mp3", Type: "audio/mpeg", Length: "100"},
 						Link:        &feeds.Link{Href: "episode.mp3"},
 					},
 				},
@@ -397,12 +413,13 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 	for _, tt := range tests {
 		f := &fields{
 			gp: gpMocks.NewMockGlobalPlayer(t),
+			hc: restyMocks.NewMockHttpClient(t),
 		}
 		if tt.setup != nil {
 			tt.setup(f)
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			u := globalplayer.NewUseCase(f.gp)
+			u := globalplayer.NewUseCase(f.gp, f.hc)
 			got, err := u.GetEpisodesFeed(ctx, tt.args.stationSlug, tt.args.showId)
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
@@ -414,6 +431,7 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 	var ctx = context.Background()
 	type fields struct {
 		gp *gpMocks.MockGlobalPlayer
+		hc *restyMocks.MockHttpClient
 	}
 	type args struct {
 		stationSlug string
@@ -444,6 +462,11 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 				f.gp.EXPECT().GetEpisodes("station", "show2").
 					Return([]*models.Episode{{Id: "show2id1", Name: "show 2 episode 1", Description: "show 2 episode 1", StreamUrl: "s2ep1.mp3"}}, nil)
 
+				expectReq1, _ := http.NewRequest(http.MethodHead, "s1ep1.mp3", nil)
+				f.hc.EXPECT().Do(expectReq1).Return(&http.Response{ContentLength: 100}, nil)
+				expectReq2, _ := http.NewRequest(http.MethodHead, "s2ep1.mp3", nil)
+				f.hc.EXPECT().Do(expectReq2).Return(&http.Response{ContentLength: 200}, nil)
+
 			},
 			want: &feeds.Feed{
 				Title:       "station",
@@ -454,14 +477,14 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 						Id:          "show1id1",
 						Title:       "show 1 episode 1: Monday 01 January 0001",
 						Description: "show 1 episode 1<br/><br/>Available until Monday 01 January 0001 00:00:00.",
-						Enclosure:   &feeds.Enclosure{Url: "s1ep1.mp3", Type: "audio/mpeg", Length: "1"},
+						Enclosure:   &feeds.Enclosure{Url: "s1ep1.mp3", Type: "audio/mpeg", Length: "100"},
 						Link:        &feeds.Link{Href: "s1ep1.mp3"},
 					},
 					{
 						Id:          "show2id1",
 						Title:       "show 2 episode 1: Monday 01 January 0001",
 						Description: "show 2 episode 1<br/><br/>Available until Monday 01 January 0001 00:00:00.",
-						Enclosure:   &feeds.Enclosure{Url: "s2ep1.mp3", Type: "audio/mpeg", Length: "1"},
+						Enclosure:   &feeds.Enclosure{Url: "s2ep1.mp3", Type: "audio/mpeg", Length: "200"},
 						Link:        &feeds.Link{Href: "s2ep1.mp3"},
 					},
 				},
@@ -518,12 +541,13 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 	for _, tt := range tests {
 		f := &fields{
 			gp: gpMocks.NewMockGlobalPlayer(t),
+			hc: restyMocks.NewMockHttpClient(t),
 		}
 		if tt.setup != nil {
 			tt.setup(f)
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			u := globalplayer.NewUseCase(f.gp)
+			u := globalplayer.NewUseCase(f.gp, f.hc)
 			got, err := u.GetAllShowsFeed(ctx, tt.args.stationSlug)
 			tt.wantErr(t, err)
 			if tt.want != nil {
