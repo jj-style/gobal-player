@@ -3,6 +3,7 @@ package feeds
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/feeds"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
@@ -26,10 +27,20 @@ func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, 
 		idx := idx
 		item := item
 		g.Go(func() error {
-			headReq, _ := http.NewRequest(http.MethodHead, item.StreamUrl, nil)
-			streamHead, err := hc.Do(headReq)
-			if err != nil {
-				return fmt.Errorf("fetching episode HEAD: %v", err)
+
+			lengthChan := lo.Async(func() int64 {
+				headReq, _ := http.NewRequest(http.MethodHead, item.StreamUrl, nil)
+				streamHead, err := hc.Do(headReq)
+				if err != nil {
+					return 1
+				}
+				return streamHead.ContentLength
+			})
+
+			var contentLength int64 = 1
+			select {
+			case <-time.After(time.Second * 5):
+			case contentLength = <-lengthChan:
 			}
 
 			feedItems[idx] = &feeds.Item{
@@ -38,7 +49,7 @@ func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, 
 				Id:          item.Id,
 				Created:     item.Aired,
 				Description: fmt.Sprintf("%s<br/><br/>Available until %s.", item.Description, item.Until.Format("Monday 02 January 2006 15:04:05")),
-				Enclosure:   &feeds.Enclosure{Url: item.StreamUrl, Type: "audio/mpeg", Length: fmt.Sprint(streamHead.ContentLength)},
+				Enclosure:   &feeds.Enclosure{Url: item.StreamUrl, Type: "audio/mpeg", Length: fmt.Sprint(contentLength)},
 			}
 			return nil
 		})
