@@ -2,8 +2,11 @@ module github.com/jj-style/gobal-player
 
 go 1.22.0
 
+replace github.com/gorilla/feeds => github.com/jj-style/feeds v0.0.0-20240404232609-6cdbd9ef1ed0
+
 require (
 	github.com/adrg/libvlc-go/v3 v3.1.5
+	github.com/dannav/hhmmss v1.0.0
 	github.com/eko/gocache/lib/v4 v4.1.5
 	github.com/eko/gocache/store/go_cache/v4 v4.2.1
 	github.com/gdamore/tcell/v2 v2.7.4
