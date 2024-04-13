@@ -1,8 +1,30 @@
 # Changelog
 
-## [v0.1.18](https://github.com/jj-style/gobal-player/compare/v0.1.17...HEAD) (2024-03-31)
+## [v0.1.19](https://github.com/jj-style/gobal-player/compare/v0.1.18...HEAD) (2024-04-13)
+
+### Features
+
+* **rss:** add enclosure length
+([b158b96](https://github.com/jj-style/gobal-player/commit/b158b963e12ac998dd25a711346a761dc6415c0e))
+* add cron schedule to gobal player
+([0153e5d](https://github.com/jj-style/gobal-player/commit/0153e5df3a293e3a3e7c55265919b4c06f82d85c)),
+closes [#22](https://github.com/jj-style/gobal-player/issues/22)
+* **server:** Add server side UI for browsing APIs
+([9aa9fa2](https://github.com/jj-style/gobal-player/commit/9aa9fa2748fb59aaceb871f9db53a862d57a0eff)),
+closes [#21](https://github.com/jj-style/gobal-player/issues/21)
 
 ### Fixes
+
+* **rss:** timeout when fetching episode content length
+([01f59bc](https://github.com/jj-style/gobal-player/commit/01f59bc4ee656b2e71f35cd9f2835a76ea2f555f))
+* **server:** actually update rest client with new build id
+([39c70a9](https://github.com/jj-style/gobal-player/commit/39c70a92cfe5b627f9bf9fea1dbacc7e56cafcac))
+* **dockerfile:** copy html templates in to run layer
+([06fc0cf](https://github.com/jj-style/gobal-player/commit/06fc0cf6ab3397b1fdab2b0b926ed517eefc4d8e))
+
+### [v0.1.18](https://github.com/jj-style/gobal-player/compare/v0.1.17...v0.1.18) (2024-03-31)
+
+#### Fixes
 
 * **ci:** changelog by fetch depth all
 ([6cdc690](https://github.com/jj-style/gobal-player/commit/6cdc6902f766ce57684fd8e90579ea36733001a4))
