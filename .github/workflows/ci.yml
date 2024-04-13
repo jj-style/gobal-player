@@ -17,7 +17,7 @@ jobs:
       - uses: taiki-e/install-action@just
 
       - name: Run tests and publish coverage
-        run: just test-cover-ci
+        run: just containerize "just test-cover"
 
       - name: Code Coverage Summary Report
         uses: irongut/CodeCoverageSummary@v1.3.0

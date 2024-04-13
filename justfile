@@ -11,10 +11,6 @@ test-cover: mocks
     go install github.com/AlekSi/gocov-xml@latest
     gocov test `go list ./... | grep -v mocks` | gocov-xml > coverage.xml
 
-# run unit tests and produce coverage report (docker)
-test-cover-ci:
-    docker compose -f docker/docker-compose.build.yml run --rm -v $(pwd):/work -w /work go sh -c "just test-cover"
-
 # tidy modules
 tidy:
     go mod tidy
@@ -32,6 +28,12 @@ generate:
 build:
     @mkdir -p bin/
     go build -o bin/ ./...
+
+# build a specific package
+build-pkg pkg:
+    @mkdir -p bin/
+    go build -o bin/{{pkg}}-${GOOS}-${GOARCH} ./cmd/{{pkg}}
+    @cd bin && sha256sum {{pkg}}-${GOOS}-${GOARCH} > {{pkg}}-${GOOS}-${GOARCH}.sha256
 
 # generate mocks
 mocks:
@@ -64,3 +66,13 @@ hooks:
     go install -v github.com/go-critic/go-critic/cmd/gocritic@latest
     command -v pre-commit
     pre-commit install
+
+# run a command in a containerized environment
+containerize +CMD:
+    docker compose \
+    -f docker/docker-compose.build.yml run \
+    --rm \
+    -v $(pwd):/work \
+    -w /work \
+    -u `id -u`:`id -g` \
+    go sh -c "{{CMD}}"
