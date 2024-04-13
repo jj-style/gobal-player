@@ -1,8 +1,15 @@
 # Changelog
 
-## [v0.1.19](https://github.com/jj-style/gobal-player/compare/v0.1.18...HEAD) (2024-04-13)
+## [v0.1.20](https://github.com/jj-style/gobal-player/compare/v0.1.19...HEAD) (2024-04-13)
 
-### Features
+### Fixes
+
+* **workflow:** GH actions write permissions
+([fbfe7c2](https://github.com/jj-style/gobal-player/commit/fbfe7c2ff436e04d2e46e7fd23113e8492507444))
+
+### [v0.1.19](https://github.com/jj-style/gobal-player/compare/v0.1.18...v0.1.19) (2024-04-13)
+
+#### Features
 
 * **rss:** add enclosure length
 ([b158b96](https://github.com/jj-style/gobal-player/commit/b158b963e12ac998dd25a711346a761dc6415c0e))
@@ -13,7 +20,7 @@ closes [#22](https://github.com/jj-style/gobal-player/issues/22)
 ([9aa9fa2](https://github.com/jj-style/gobal-player/commit/9aa9fa2748fb59aaceb871f9db53a862d57a0eff)),
 closes [#21](https://github.com/jj-style/gobal-player/issues/21)
 
-### Fixes
+#### Fixes
 
 * **rss:** timeout when fetching episode content length
 ([01f59bc](https://github.com/jj-style/gobal-player/commit/01f59bc4ee656b2e71f35cd9f2835a76ea2f555f))
