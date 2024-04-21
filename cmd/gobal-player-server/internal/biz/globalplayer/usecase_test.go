@@ -360,7 +360,7 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 			args: args{stationSlug: "station", showId: "show"},
 			setup: func(f *fields) {
 				f.gp.EXPECT().GetEpisodes("station", "show").
-					Return([]*models.Episode{{Id: "id", Name: "episode 1", Description: "episode", StreamUrl: "episode.mp3"}}, nil)
+					Return([]*models.Episode{{Id: "id", Name: "episode 1", Description: "episode", StreamUrl: "episode.mp3", Duration: "00:30:00"}}, nil)
 
 				f.gp.EXPECT().
 					GetShows("station").
@@ -372,7 +372,14 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 			want: &feeds.Feed{
 				Title:       "show",
 				Description: "episode",
+				Subtitle:    "episode",
 				Image:       &feeds.Image{Url: "show.jpg"},
+				ITunes: &feeds.ITunesFeed{
+					Explicit: false,
+					Type:     feeds.ITunesFeedTypeEpisodic,
+					Title:    "show",
+					Image:    &feeds.ITunesImage{Href: "show.jpg"},
+				},
 				Items: []*feeds.Item{
 					{
 						Id:          "id",
@@ -380,6 +387,10 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 						Description: "episode<br/><br/>Available until Monday 01 January 0001 00:00:00.",
 						Enclosure:   &feeds.Enclosure{Url: "episode.mp3", Type: "audio/mpeg", Length: "100"},
 						Link:        &feeds.Link{Href: "episode.mp3"},
+						ITunes: &feeds.ITunesItem{
+							Duration:    "30m0s",
+							EpisodeType: feeds.ITunesEpisodeTypeFull,
+						},
 					},
 				},
 			},
@@ -457,10 +468,10 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 					}, nil)
 
 				f.gp.EXPECT().GetEpisodes("station", "show1").
-					Return([]*models.Episode{{Id: "show1id1", Name: "show 1 episode 1", Description: "show 1 episode 1", StreamUrl: "s1ep1.mp3"}}, nil)
+					Return([]*models.Episode{{Id: "show1id1", Name: "show 1 episode 1", Description: "show 1 episode 1", StreamUrl: "s1ep1.mp3", Duration: "00:30:00"}}, nil)
 
 				f.gp.EXPECT().GetEpisodes("station", "show2").
-					Return([]*models.Episode{{Id: "show2id1", Name: "show 2 episode 1", Description: "show 2 episode 1", StreamUrl: "s2ep1.mp3"}}, nil)
+					Return([]*models.Episode{{Id: "show2id1", Name: "show 2 episode 1", Description: "show 2 episode 1", StreamUrl: "s2ep1.mp3", Duration: "00:30:00"}}, nil)
 
 				expectReq1, _ := http.NewRequest(http.MethodHead, "s1ep1.mp3", nil)
 				f.hc.EXPECT().Do(expectReq1).Return(&http.Response{ContentLength: 100}, nil)
@@ -471,7 +482,14 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 			want: &feeds.Feed{
 				Title:       "station",
 				Description: "a cool station",
+				Subtitle:    "a cool station",
 				Image:       &feeds.Image{Url: "station.jpg"},
+				ITunes: &feeds.ITunesFeed{
+					Image:    &feeds.ITunesImage{Href: "station.jpg"},
+					Explicit: false,
+					Type:     feeds.ITunesFeedTypeEpisodic,
+					Title:    "station",
+				},
 				Items: []*feeds.Item{
 					{
 						Id:          "show1id1",
@@ -479,6 +497,10 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 						Description: "show 1 episode 1<br/><br/>Available until Monday 01 January 0001 00:00:00.",
 						Enclosure:   &feeds.Enclosure{Url: "s1ep1.mp3", Type: "audio/mpeg", Length: "100"},
 						Link:        &feeds.Link{Href: "s1ep1.mp3"},
+						ITunes: &feeds.ITunesItem{
+							Duration:    "30m0s",
+							EpisodeType: feeds.ITunesEpisodeTypeFull,
+						},
 					},
 					{
 						Id:          "show2id1",
@@ -486,6 +508,10 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 						Description: "show 2 episode 1<br/><br/>Available until Monday 01 January 0001 00:00:00.",
 						Enclosure:   &feeds.Enclosure{Url: "s2ep1.mp3", Type: "audio/mpeg", Length: "200"},
 						Link:        &feeds.Link{Href: "s2ep1.mp3"},
+						ITunes: &feeds.ITunesItem{
+							Duration:    "30m0s",
+							EpisodeType: feeds.ITunesEpisodeTypeFull,
+						},
 					},
 				},
 			},

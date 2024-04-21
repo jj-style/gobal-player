@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dannav/hhmmss"
 	"github.com/gorilla/feeds"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
 	"github.com/jj-style/gobal-player/pkg/resty"
@@ -19,6 +20,13 @@ func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, 
 		Image:       &feeds.Image{Url: show.ImageUrl},
 		Updated:     lo.MaxBy(episodes, func(a, b *models.Episode) bool { return b.Aired.After(a.Aired) }).Aired,
 		Description: description,
+		Subtitle:    description,
+		ITunes: &feeds.ITunesFeed{
+			Title:    show.Name,
+			Image:    &feeds.ITunesImage{Href: show.ImageUrl},
+			Type:     feeds.ITunesFeedTypeEpisodic,
+			Explicit: false,
+		},
 	}
 
 	feedItems := make([]*feeds.Item, len(episodes))
@@ -27,6 +35,10 @@ func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, 
 		idx := idx
 		item := item
 		g.Go(func() error {
+			duration, err := hhmmss.Parse(item.Duration)
+			if err != nil {
+				return fmt.Errorf("parsing episode duration '%s': %v", item.Duration, err)
+			}
 
 			lengthChan := lo.Async(func() int64 {
 				headReq, _ := http.NewRequest(http.MethodHead, item.StreamUrl, nil)
@@ -50,6 +62,10 @@ func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, 
 				Created:     item.Aired,
 				Description: fmt.Sprintf("%s<br/><br/>Available until %s.", item.Description, item.Until.Format("Monday 02 January 2006 15:04:05")),
 				Enclosure:   &feeds.Enclosure{Url: item.StreamUrl, Type: "audio/mpeg", Length: fmt.Sprint(contentLength)},
+				ITunes: &feeds.ITunesItem{
+					Duration:    fmt.Sprint(duration),
+					EpisodeType: feeds.ITunesEpisodeTypeFull,
+				},
 			}
 			return nil
 		})
