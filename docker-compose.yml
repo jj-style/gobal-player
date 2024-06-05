@@ -1,0 +1,11 @@
+services:
+  nats:
+    image: nats:latest
+    container_name: nats
+    ports:
+      - 4222:4222
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - 6379:6379
