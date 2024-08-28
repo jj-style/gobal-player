@@ -388,7 +388,7 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 						Enclosure:   &feeds.Enclosure{Url: "episode.mp3", Type: "audio/mpeg", Length: "100"},
 						Link:        &feeds.Link{Href: "episode.mp3"},
 						ITunes: &feeds.ITunesItem{
-							Duration:    "30m0s",
+							Duration:    "00:30:00",
 							EpisodeType: feeds.ITunesEpisodeTypeFull,
 						},
 					},
@@ -498,7 +498,7 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 						Enclosure:   &feeds.Enclosure{Url: "s1ep1.mp3", Type: "audio/mpeg", Length: "100"},
 						Link:        &feeds.Link{Href: "s1ep1.mp3"},
 						ITunes: &feeds.ITunesItem{
-							Duration:    "30m0s",
+							Duration:    "00:30:00",
 							EpisodeType: feeds.ITunesEpisodeTypeFull,
 						},
 					},
@@ -509,7 +509,7 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 						Enclosure:   &feeds.Enclosure{Url: "s2ep1.mp3", Type: "audio/mpeg", Length: "200"},
 						Link:        &feeds.Link{Href: "s2ep1.mp3"},
 						ITunes: &feeds.ITunesItem{
-							Duration:    "30m0s",
+							Duration:    "00:30:00",
 							EpisodeType: feeds.ITunesEpisodeTypeFull,
 						},
 					},

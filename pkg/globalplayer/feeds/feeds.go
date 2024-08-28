@@ -63,7 +63,7 @@ func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, 
 				Description: fmt.Sprintf("%s<br/><br/>Available until %s.", item.Description, item.Until.Format("Monday 02 January 2006 15:04:05")),
 				Enclosure:   &feeds.Enclosure{Url: item.StreamUrl, Type: "audio/mpeg", Length: fmt.Sprint(contentLength)},
 				ITunes: &feeds.ITunesItem{
-					Duration:    fmt.Sprint(duration),
+					Duration:    fmtDuration(duration),
 					EpisodeType: feeds.ITunesEpisodeTypeFull,
 				},
 			}
@@ -78,4 +78,15 @@ func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, 
 	feed.Items = feedItems
 
 	return feed, nil
+}
+
+// formats a duration as "HH:MM:SS"
+func fmtDuration(d time.Duration) string {
+	d = d.Round(time.Second)
+	h := d / time.Hour
+	d -= h * time.Hour
+	m := d / time.Minute
+	d -= m * time.Minute
+	s := d / time.Second
+	return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
 }
