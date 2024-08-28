@@ -1,8 +1,22 @@
 # Changelog
 
-## [v0.1.20](https://github.com/jj-style/gobal-player/compare/v0.1.19...HEAD) (2024-04-13)
+## [v0.1.21](https://github.com/jj-style/gobal-player/compare/v0.1.20...HEAD) (2024-08-28)
+
+### Features
+
+* **server:** Itunes tags (#24)
+([39f68d3](https://github.com/jj-style/gobal-player/commit/39f68d3fa69e5dde2f1049f77b44654949afa513)),
+closes [#24](https://github.com/jj-style/gobal-player/issues/24)
 
 ### Fixes
+
+* podcast duration in rss (#26)
+([7b65c32](https://github.com/jj-style/gobal-player/commit/7b65c3295349f93cdd2843e543628f23ec562319)),
+closes [#26](https://github.com/jj-style/gobal-player/issues/26)
+
+### [v0.1.20](https://github.com/jj-style/gobal-player/compare/v0.1.19...v0.1.20) (2024-04-13)
+
+#### Fixes
 
 * **workflow:** GH actions write permissions
 ([fbfe7c2](https://github.com/jj-style/gobal-player/commit/fbfe7c2ff436e04d2e46e7fd23113e8492507444))
