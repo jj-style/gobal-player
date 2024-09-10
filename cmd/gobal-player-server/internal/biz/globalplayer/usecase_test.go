@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gorilla/feeds"
+	"github.com/jj-style/feeds"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer"
 	gpMocks "github.com/jj-style/gobal-player/pkg/globalplayer/mocks"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"

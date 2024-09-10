@@ -22,6 +22,7 @@ type GlobalPlayer interface {
 	GetStations() ([]*models.Station, error)
 	GetShows(stationSlug string) ([]*models.Show, error)
 	GetEpisodes(stationSlug, showId string) ([]*models.Episode, error)
+	GetLive() ([]*models.LiveStation, error)
 }
 
 type gpClient struct {
@@ -102,6 +103,18 @@ func (c *gpClient) GetEpisodes(stationSlug, showId string) ([]*models.Episode, e
 
 	return lo.Map(resp.PageProps.CatchupInfo.Episodes, func(item nextjs.Episode, _ int) *models.Episode {
 		return models.EpisodeFromApiModel(&item)
+	}), nil
+}
+
+func (c *gpClient) GetLive() ([]*models.LiveStation, error) {
+	u, _ := url.JoinPath("live", "lbc", "uk.json")
+	got, err := resty.Get[nextjs.LiveResponse](c.rc, u)
+	if err != nil {
+		return nil, err
+	}
+
+	return lo.Map(got.PageProps.Brands, func(item nextjs.Brand, _ int) *models.LiveStation {
+		return models.LiveStationFromApiModel(&item)
 	}), nil
 }
 

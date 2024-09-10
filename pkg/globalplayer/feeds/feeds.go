@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/dannav/hhmmss"
-	"github.com/gorilla/feeds"
+	"github.com/jj-style/feeds"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
 	"github.com/jj-style/gobal-player/pkg/resty"
 	"github.com/samber/lo"

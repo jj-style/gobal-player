@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 
 	"github.com/google/wire"
-	"github.com/gorilla/feeds"
+	"github.com/jj-style/feeds"
 	"github.com/jj-style/gobal-player/pkg/globalplayer"
 	feeds2 "github.com/jj-style/gobal-player/pkg/globalplayer/feeds"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
@@ -24,6 +24,7 @@ type UseCase interface {
 	GetEpisodes(context.Context, string, string) ([]*models.Episode, error)
 	GetEpisodesFeed(context.Context, string, string) (*feeds.Feed, error)
 	GetAllShowsFeed(context.Context, string) (*feeds.Feed, error)
+	GetLive(context.Context) ([]*models.LiveStation, error)
 }
 
 type useCase struct {
@@ -133,6 +134,10 @@ func (u *useCase) GetAllShowsFeed(ctx context.Context, stationsSlug string) (*fe
 	}
 
 	return feeds2.ToFeed(u.hc, &models.Show{Name: st.Name, ImageUrl: st.ImageUrl}, episodes, st.Tagline)
+}
+
+func (u *useCase) GetLive(ctx context.Context) ([]*models.LiveStation, error) {
+	return u.gp.GetLive()
 }
 
 func NewUseCase(gp globalplayer.GlobalPlayer, hc resty.HttpClient) UseCase {

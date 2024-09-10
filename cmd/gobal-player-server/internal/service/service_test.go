@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/feeds"
+	"github.com/jj-style/feeds"
 	gpMocks "github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer/mocks"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/server"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/service"
@@ -288,6 +288,7 @@ func Test_service_GetAllShowsRss(t *testing.T) {
 			name: "happy",
 			args: args{slug: "slug"},
 			setup: func(f fields) {
+				f.uc.EXPECT().GetLive(mock.Anything).Return([]*models.LiveStation{}, nil)
 				f.uc.EXPECT().GetAllShowsFeed(mock.Anything, "slug").
 					Return(&feeds.Feed{Title: "title", Description: "description", Id: "id"}, nil)
 			},

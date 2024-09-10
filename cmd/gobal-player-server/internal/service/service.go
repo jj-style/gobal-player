@@ -1,10 +1,15 @@
 package service
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jj-style/feeds"
 	"github.com/jj-style/gobal-player/cmd/gobal-player-server/internal/biz/globalplayer"
+	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
+	"github.com/samber/lo"
 )
 
 type Service struct {
@@ -19,6 +24,15 @@ func (s *Service) GetStations(c *gin.Context) {
 	}
 
 	c.JSONP(http.StatusOK, gin.H{"stations": stations})
+}
+
+func (s *Service) GetLive(c *gin.Context) {
+	live, err := s.uc.GetLive(c)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSONP(http.StatusOK, gin.H{"live": live})
 }
 
 func (s *Service) GetShows(c *gin.Context) {
@@ -105,6 +119,44 @@ func (s *Service) GetAllShowsRss(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	liveStations, err := s.uc.GetLive(c)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get the live shows, and if there is a corresponding live feed of the same station
+	// then add a podcastin2.0 live item tag to the feed
+	if live, found := lo.Find(liveStations, func(item *models.LiveStation) bool {
+		return item.Slug == req.Slug
+	}); found {
+		feed.Podcasting2LiveItem = &feeds.Podcasting2LiveItem{
+			Status: "live",
+			Start:  time.Now().Add(-time.Hour).Format(time.RFC3339),
+			RssItem: &feeds.RssItem{
+				Enclosure:   &feeds.RssEnclosure{Url: live.StreamUrl, Type: "audio/mpeg", Length: "312"},
+				Title:       fmt.Sprintf("%s Live!", live.Name),
+				Description: live.Tagline,
+				Link:        live.StreamUrl,
+				Guid:        &feeds.RssGuid{Id: feeds.NewUUID().String()},
+				Podcasting2Item: &feeds.Podcasting2Item{
+					ContentLink: &feeds.Podcasting2ContentLink{
+						Href: live.StreamUrl,
+						Text: "Listen Live!",
+					},
+					AlternateEnclosure: &feeds.Podcasting2AlternateEnclosure{
+						Type:    "audio/mpeg",
+						Length:  "312",
+						Default: true,
+						Source: feeds.Podcasting2Source{
+							Url: live.StreamUrl,
+						},
+					},
+				},
+			},
+		}
 	}
 
 	rss, err := feed.ToRss()

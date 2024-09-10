@@ -8,6 +8,7 @@ import (
 func addRoutes(r *gin.Engine, service *service.Service) {
 	api := r.Group("/api")
 	api.GET("/stations", service.GetStations)
+	api.GET("/live", service.GetLive)
 	api.GET("/shows/:slug", service.GetShows)
 	api.GET("/episodes/:slug/:id", service.GetEpisodes)
 	api.GET("/shows/:slug/rss", service.GetAllShowsRss)
