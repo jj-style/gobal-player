@@ -135,6 +135,7 @@ func (s *Service) GetAllShowsRss(c *gin.Context) {
 		feed.Podcasting2LiveItem = &feeds.Podcasting2LiveItem{
 			Status: "live",
 			Start:  time.Now().Add(-time.Hour).Format(time.RFC3339),
+			End:    time.Now().Add(time.Hour).Format(time.RFC3339),
 			RssItem: &feeds.RssItem{
 				Enclosure:   &feeds.RssEnclosure{Url: live.StreamUrl, Type: "audio/mpeg", Length: "312"},
 				Title:       fmt.Sprintf("%s Live!", live.Name),
