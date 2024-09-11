@@ -140,7 +140,7 @@ func (s *Service) GetAllShowsRss(c *gin.Context) {
 				Title:       fmt.Sprintf("%s Live!", live.Name),
 				Description: live.Tagline,
 				Link:        live.StreamUrl,
-				Guid:        &feeds.RssGuid{Id: feeds.NewUUID().String()},
+				Guid:        &feeds.RssGuid{Id: live.StreamUrl, IsPermaLink: "true"},
 				Podcasting2Item: &feeds.Podcasting2Item{
 					ContentLink: &feeds.Podcasting2ContentLink{
 						Href: live.StreamUrl,
@@ -151,7 +151,7 @@ func (s *Service) GetAllShowsRss(c *gin.Context) {
 						Length:  "312",
 						Default: true,
 						Source: feeds.Podcasting2Source{
-							Url: live.StreamUrl,
+							Uri: live.StreamUrl,
 						},
 					},
 				},
