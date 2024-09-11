@@ -17,6 +17,7 @@ import (
 func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, description string) (*feeds.Feed, error) {
 	feed := &feeds.Feed{
 		Title:       show.Name,
+		Link:        &feeds.Link{Href: "https://github.com/jj-style/gobal-player"},
 		Image:       &feeds.Image{Url: show.ImageUrl, Title: show.Name, Link: show.ImageUrl},
 		Updated:     lo.MaxBy(episodes, func(a, b *models.Episode) bool { return b.Aired.After(a.Aired) }).Aired,
 		Description: description,
