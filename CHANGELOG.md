@@ -1,6 +1,11 @@
 # Changelog
 
-## [v0.1.21](https://github.com/jj-style/gobal-player/compare/v0.1.21...abaed957ae7f042c88c820dad9411bac7f3d22f7) (2026-08-23)
+## [v0.1.22](https://github.com/jj-style/gobal-player/compare/v0.1.21...ec864fbb9a9da62859c8b4efb0908ac61e188ca5) (2026-08-23)
+
+### Fixes
+
+* add a convco commit to bump version
+([ec864fb](https://github.com/jj-style/gobal-player/commit/ec864fbb9a9da62859c8b4efb0908ac61e188ca5))
 
 ### [v0.1.21](https://github.com/jj-style/gobal-player/compare/v0.1.20...v0.1.21) (2024-08-28)
 
