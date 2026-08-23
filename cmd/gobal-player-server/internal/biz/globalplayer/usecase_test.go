@@ -360,7 +360,7 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 			args: args{stationSlug: "station", showId: "show"},
 			setup: func(f *fields) {
 				f.gp.EXPECT().GetEpisodes("station", "show").
-					Return([]*models.Episode{{Id: "id", Name: "episode 1", Description: "episode", StreamUrl: "episode.mp3", Duration: "00:30:00"}}, nil)
+					Return([]*models.Episode{{Id: "id", Name: "episode 1", Description: "episode", StreamUrl: "episode.mp3", DurationSeconds: 1800}}, nil)
 
 				f.gp.EXPECT().
 					GetShows("station").
@@ -468,10 +468,10 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 					}, nil)
 
 				f.gp.EXPECT().GetEpisodes("station", "show1").
-					Return([]*models.Episode{{Id: "show1id1", Name: "show 1 episode 1", Description: "show 1 episode 1", StreamUrl: "s1ep1.mp3", Duration: "00:30:00"}}, nil)
+					Return([]*models.Episode{{Id: "show1id1", Name: "show 1 episode 1", Description: "show 1 episode 1", StreamUrl: "s1ep1.mp3", DurationSeconds: 1800}}, nil)
 
 				f.gp.EXPECT().GetEpisodes("station", "show2").
-					Return([]*models.Episode{{Id: "show2id1", Name: "show 2 episode 1", Description: "show 2 episode 1", StreamUrl: "s2ep1.mp3", Duration: "00:30:00"}}, nil)
+					Return([]*models.Episode{{Id: "show2id1", Name: "show 2 episode 1", Description: "show 2 episode 1", StreamUrl: "s2ep1.mp3", DurationSeconds: 1800}}, nil)
 
 				expectReq1, _ := http.NewRequest(http.MethodHead, "s1ep1.mp3", nil)
 				f.hc.EXPECT().Do(expectReq1).Return(&http.Response{ContentLength: 100}, nil)

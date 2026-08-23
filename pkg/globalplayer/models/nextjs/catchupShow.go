@@ -9,26 +9,53 @@ type CatchupShowResponse struct {
 type CatchupShowPageProps struct {
 	Station     CatchupShowStationBrand `json:"station"`
 	CatchupInfo CatchupInfoDetails      `json:"catchupInfo"`
+	ID          string                  `json:"id"`
 }
 
 type CatchupInfoDetails struct {
-	ID          string    `json:"id"`
+	Title           string `json:"title"`
+	CatchupMetadata `json:"metadata"`
+
+	Blocks []CatchupBlock `json:"blocks"`
+	// Episodes []Episode `json:"episodes"`
+
+}
+
+type CatchupMetadata struct {
+	Description string `json:"description"`
+	Author      string `json:"author"`
+	Image       struct {
+		Url string `json:"url"`
+	} `json:"image"`
+}
+
+type CatchupBlock struct {
+	Type       string `json:"type"`
+	Identifier string `json:"identifier"`
+	Image      struct {
+		Url string `json:"url"`
+	} `json:"image"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	ImageURL    string    `json:"imageUrl"`
-	Episodes    []Episode `json:"episodes"`
+	Items       []Episode `json:"items"`
 }
 
 type Episode struct {
-	Availability   string    `json:"availability"`
-	AvailableUntil time.Time `json:"availableUntil"`
-	Description    string    `json:"description"`
-	Duration       string    `json:"duration"`
-	ID             string    `json:"id"`
-	ImageURL       string    `json:"imageUrl"`
-	StartDate      time.Time `json:"startDate"`
-	StreamURL      string    `json:"streamUrl"`
-	Title          string    `json:"title"`
+	Description string `json:"description"`
+	ID          string `json:"id"`
+	Image       struct {
+		Url string `json:"url"`
+	} `json:"image"`
+	Title   string         `json:"title"`
+	Content EpisodeContent `json:"content"`
+}
+
+type EpisodeContent struct {
+	Type            string    `json:"type"`
+	Duration        string    `json:"duration"`
+	DurationSeconds int       `json:"durationSeconds"`
+	Published       time.Time `json:"published"`
+	Expiry          time.Time `json:"Expiry"`
 }
 
 type CatchupShowStationBrand struct {

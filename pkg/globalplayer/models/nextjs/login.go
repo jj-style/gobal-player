@@ -5,7 +5,7 @@ import "time"
 type LoginRequest struct {
 	LoginId  string `json:"loginID"`
 	Password string `json:"password"`
-	ApiKey   string `json:"ApiKey"`
+	ApiKey   string `json:"APIKey"`
 }
 
 type LoginResponse struct {
@@ -52,6 +52,6 @@ type Profile struct {
 }
 
 type SessionInfo struct {
-	CookieName  string `json:"cookieName"`
-	CookieValue string `json:"cookieValue"`
+	LoginToken string `json:"login_token"`
+	ExpiresIn  string `json:"expires_in"`
 }

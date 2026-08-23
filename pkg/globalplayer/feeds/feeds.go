@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dannav/hhmmss"
 	"github.com/gorilla/feeds"
 	"github.com/jj-style/gobal-player/pkg/globalplayer/models"
 	"github.com/jj-style/gobal-player/pkg/resty"
@@ -35,10 +34,7 @@ func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, 
 		idx := idx
 		item := item
 		g.Go(func() error {
-			duration, err := hhmmss.Parse(item.Duration)
-			if err != nil {
-				return fmt.Errorf("parsing episode duration '%s': %v", item.Duration, err)
-			}
+			duration := time.Second * time.Duration(item.DurationSeconds)
 
 			lengthChan := lo.Async(func() int64 {
 				headReq, _ := http.NewRequest(http.MethodHead, item.StreamUrl, nil)

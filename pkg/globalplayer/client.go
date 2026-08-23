@@ -2,6 +2,7 @@ package globalplayer
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -15,6 +16,7 @@ import (
 const (
 	loginUrl = "https://gigya.globalplayer.com/accounts.login"
 	baseUrl  = "https://www.globalplayer.com/_next/data"
+	bffUrl   = "https://bff-web-guacamole.musicradio.com"
 )
 
 // GlobalPlayer is an interface to some of global players APIs
@@ -27,6 +29,8 @@ type GlobalPlayer interface {
 type gpClient struct {
 	rc   resty.Client
 	cron *cron.Cron
+
+	bffClient resty.Client
 }
 
 func NewClient(hc *http.Client, cache resty.Cache[[]byte], updateDuration string) (GlobalPlayer, func(), error) {
@@ -51,7 +55,13 @@ func NewClient(hc *http.Client, cache resty.Cache[[]byte], updateDuration string
 	}
 
 	cron := cron.New()
-	client := &gpClient{rc: rc, cron: cron}
+
+	bffClient := resty.NewClient(
+		resty.WithBaseUrl(bffUrl),
+		resty.WithCache(cache),
+	)
+
+	client := &gpClient{rc: rc, cron: cron, bffClient: bffClient}
 
 	if updateDuration != "" {
 		_, err = cron.AddFunc("@every 1m", func() {
@@ -100,20 +110,59 @@ func (c *gpClient) GetEpisodes(stationSlug, showId string) ([]*models.Episode, e
 		return nil, err
 	}
 
-	return lo.Map(resp.PageProps.CatchupInfo.Episodes, func(item nextjs.Episode, _ int) *models.Episode {
-		return models.EpisodeFromApiModel(&item)
-	}), nil
+	catchupBlocks := resp.PageProps.CatchupInfo.Blocks
+	listingsBlock, ok := lo.Find(catchupBlocks, func(item nextjs.CatchupBlock) bool { return item.Type == "Listing" })
+	episodes := make([]*models.Episode, 0, len(catchupBlocks))
+	if !ok {
+		return episodes, nil
+	}
+
+	for _, listing := range listingsBlock.Items {
+		playable, err := resty.Get[nextjs.BffPlayableResponse](c.bffClient, "/playables/"+listing.ID)
+		if err != nil {
+			log.Printf("error getting playable: %v", err)
+			continue
+		}
+
+		var streamUrl string
+		for _, playback := range playable.Playback {
+			// TODO - get authentication for AdFree Url
+			if !lo.Contains(playback.Flags, "AdFree") && playback.Url != "" {
+				streamUrl = playback.Url
+				break
+			}
+		}
+
+		episodes = append(episodes, &models.Episode{
+			Id:              playable.Id,
+			Name:            playable.Title,
+			Description:     listing.Description,
+			ImageUrl:        listing.Image.Url,
+			StreamUrl:       streamUrl,
+			Duration:        listing.Content.Duration,
+			DurationSeconds: listing.Content.DurationSeconds,
+			Aired:           listing.Content.Published,
+			Until:           listing.Content.Expiry,
+			Availability:    listing.Content.Expiry.String(),
+		})
+	}
+	return episodes, nil
 }
 
 // Login logs in through the the global player API returning the authorisation response, or errors.
 func Login(email, password, apiKey string) (nextjs.LoginResponse, error) {
-	return resty.Post[url.Values, nextjs.LoginResponse](
+	return resty.Post[map[string]string, nextjs.LoginResponse](
 		resty.NewClient(),
 		loginUrl,
-		url.Values{
-			"LoginId":  []string{email},
-			"Password": []string{password},
-			"APIKey":   []string{apiKey},
+		map[string]string{
+			"LoginId":           email,
+			"password":          password,
+			"APIKey":            apiKey,
+			"includeUserInfo":   "true",
+			"include":           "profile,data",
+			"targetEnv":         "jssdk",
+			"sdk":               "js_latest",
+			"sessionExpiration": "0",
 		},
 	)
 }
