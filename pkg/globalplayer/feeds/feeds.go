@@ -52,7 +52,7 @@ func ToFeed(hc resty.HttpClient, show *models.Show, episodes []*models.Episode, 
 			}
 
 			feedItems[idx] = &feeds.Item{
-				Title:       fmt.Sprintf("%s: %s", item.Name, item.Aired.Format("Monday 02 January 2006")),
+				Title:       fmt.Sprintf("%s: %s", show.Name, item.Name),
 				Link:        &feeds.Link{Href: item.StreamUrl},
 				Id:          item.Id,
 				Created:     item.Aired,
