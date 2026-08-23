@@ -1,14 +1,16 @@
 # Changelog
 
-## [v0.1.21](https://github.com/jj-style/gobal-player/compare/v0.1.20...HEAD) (2024-08-28)
+## [v0.1.21](https://github.com/jj-style/gobal-player/compare/v0.1.21...abaed957ae7f042c88c820dad9411bac7f3d22f7) (2026-08-23)
 
-### Features
+### [v0.1.21](https://github.com/jj-style/gobal-player/compare/v0.1.20...v0.1.21) (2024-08-28)
+
+#### Features
 
 * **server:** Itunes tags (#24)
 ([39f68d3](https://github.com/jj-style/gobal-player/commit/39f68d3fa69e5dde2f1049f77b44654949afa513)),
 closes [#24](https://github.com/jj-style/gobal-player/issues/24)
 
-### Fixes
+#### Fixes
 
 * podcast duration in rss (#26)
 ([7b65c32](https://github.com/jj-style/gobal-player/commit/7b65c3295349f93cdd2843e543628f23ec562319)),
