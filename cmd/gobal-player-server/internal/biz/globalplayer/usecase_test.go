@@ -383,7 +383,7 @@ func Test_useCase_GetEpisodesFeed(t *testing.T) {
 				Items: []*feeds.Item{
 					{
 						Id:          "id",
-						Title:       "episode 1: Monday 01 January 0001",
+						Title:       "show: episode 1",
 						Description: "episode<br/><br/>Available until Monday 01 January 0001 00:00:00.",
 						Enclosure:   &feeds.Enclosure{Url: "episode.mp3", Type: "audio/mpeg", Length: "100"},
 						Link:        &feeds.Link{Href: "episode.mp3"},
@@ -493,7 +493,7 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 				Items: []*feeds.Item{
 					{
 						Id:          "show1id1",
-						Title:       "show 1 episode 1: Monday 01 January 0001",
+						Title:       "station: show 1 episode 1",
 						Description: "show 1 episode 1<br/><br/>Available until Monday 01 January 0001 00:00:00.",
 						Enclosure:   &feeds.Enclosure{Url: "s1ep1.mp3", Type: "audio/mpeg", Length: "100"},
 						Link:        &feeds.Link{Href: "s1ep1.mp3"},
@@ -504,7 +504,7 @@ func Test_useCase_GetAllShowsFeed(t *testing.T) {
 					},
 					{
 						Id:          "show2id1",
-						Title:       "show 2 episode 1: Monday 01 January 0001",
+						Title:       "station: show 2 episode 1",
 						Description: "show 2 episode 1<br/><br/>Available until Monday 01 January 0001 00:00:00.",
 						Enclosure:   &feeds.Enclosure{Url: "s2ep1.mp3", Type: "audio/mpeg", Length: "200"},
 						Link:        &feeds.Link{Href: "s2ep1.mp3"},
