@@ -1,8 +1,17 @@
 # Changelog
 
-## [v0.1.22](https://github.com/jj-style/gobal-player/compare/v0.1.21...ec864fbb9a9da62859c8b4efb0908ac61e188ca5) (2026-08-23)
+## [v0.1.23](https://github.com/jj-style/gobal-player/compare/v0.1.22...b963c31a486558808fbab358a313a360283ef013) (2026-09-07)
 
 ### Fixes
+
+* catchupInfo renamed to catchupShow
+([b963c31](https://github.com/jj-style/gobal-player/commit/b963c31a486558808fbab358a313a360283ef013))
+* **rss:** duplicate date in episode title in rss feeds
+([26bcc31](https://github.com/jj-style/gobal-player/commit/26bcc31c28600f4fd5cbb34d76e16e63e4aedd58))
+
+### [v0.1.22](https://github.com/jj-style/gobal-player/compare/v0.1.21...v0.1.22) (2026-08-23)
+
+#### Fixes
 
 * add a convco commit to bump version
 ([ec864fb](https://github.com/jj-style/gobal-player/commit/ec864fbb9a9da62859c8b4efb0908ac61e188ca5))
