@@ -110,7 +110,7 @@ func (c *gpClient) GetEpisodes(stationSlug, showId string) ([]*models.Episode, e
 		return nil, err
 	}
 
-	catchupBlocks := resp.PageProps.CatchupInfo.Blocks
+	catchupBlocks := resp.PageProps.CatchupShow.Blocks
 	listingsBlock, ok := lo.Find(catchupBlocks, func(item nextjs.CatchupBlock) bool { return item.Type == "Listing" })
 	episodes := make([]*models.Episode, 0, len(catchupBlocks))
 	if !ok {

@@ -8,7 +8,7 @@ type CatchupShowResponse struct {
 
 type CatchupShowPageProps struct {
 	Station     CatchupShowStationBrand `json:"station"`
-	CatchupInfo CatchupInfoDetails      `json:"catchupInfo"`
+	CatchupShow CatchupInfoDetails      `json:"catchupShow"`
 	ID          string                  `json:"id"`
 }
 
